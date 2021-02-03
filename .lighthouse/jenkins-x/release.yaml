@@ -30,8 +30,12 @@ spec:
           resources: {}
         - name: build-cargo-install
           resources: {}
-        - name: build-copy-bin
+        - image: gcr.io/jenkinsxio/builder-rust:2.1.150-769
+          name: build-copy-bin
           resources: {}
+          script: |
+            #!/bin/sh
+            cp ~/.cargo/bin/homepage .
         - name: build-container-build
           resources: {}
         - name: promote-changelog
