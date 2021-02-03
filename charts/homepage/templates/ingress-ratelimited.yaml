@@ -8,10 +8,10 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-ratelimited
   labels:
     {{- include "pauwels-labs.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations.global }}
+  {{- with .Values.ingress.annotations.ratelimited }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -27,7 +27,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts.global }}
+    {{- range .Values.ingress.hosts.ratelimited }}
     - host: {{ .host | quote }}
       http:
         paths:

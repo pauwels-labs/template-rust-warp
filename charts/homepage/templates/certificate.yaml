@@ -1,0 +1,26 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: {{ include "pauwels-labs.fullname" . }}
+  labels:
+  {{- include "pauwels-labs.labels" . | nindent 4 }}
+spec:
+  secretName: pauwels-labs-tls
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  organization:
+  - Pauwels Labs
+  commonName: {{ .Values.tls.cert.cn }}
+  isCA: false
+  keySize: 2048
+  keyAlgorithm: rsa
+  keyEncoding: pkcs1
+  usages:
+  - server auth
+  - client auth
+  dnsNames:
+{{ toYaml .Values.tls.cert.urls | indent 2 }}
+  issuerRef:
+    name: {{ .Values.tls.cert.issuer }}
+    kind: Issuer
+    group: cert-manager.io

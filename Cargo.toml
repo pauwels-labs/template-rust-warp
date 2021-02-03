@@ -1,7 +1,14 @@
 [package]
 name = "homepage"
 version = "0.1.0"
+authors = ["ajp <8890201+ajpauwels@users.noreply.github.com>"]
+edition = "2018"
 
 [dependencies]
-rocket = "0.3.6"
-rocket_codegen = "0.3.6"
+tokio = { version = "0.2", features = ["macros"] }
+warp = "0.2"
+rust-config = { git = "https://github.com/ajpauwels/rust-config.git" }
+reqwest = { version = "0.10.8", default-features = false, features = ["json", "rustls-tls"] }
+handlebars = "3.5.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

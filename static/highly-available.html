@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/global.css">
+  </head>
+  <body>
+    <div id="content-wrapper">
+      <h1>Highly Available</h1>
+      <p>
+	Highly-available software continues to run when it breaks.
+      </p>
+      <p>
+	When software fails, and it inevitably always does, it can do so in one of three ways:
+	<ol>
+	  <li>
+	    Quietly, without telling anyone, and with no immediately obvious problems.
+	  </li>
+	  <li>
+	    Catastrophically, the code crashes, the computer shuts down, alarm bells ring.
+	  </li>
+	  <li>
+	    Harmfully, by losing or destroying business-critical data.
+	  </li>
+	</ol>
+      </p>
+      <p>
+	Frequently, these failure-modes are combined into failure-monstrosities. The most
+	insidious failures do so quietly and harmfully, allowing the destruction to continue
+	undetected for extended amounts of time until the error turns catastrophic. The best
+	failures are simply catastrophic, because I can immediately see them and address them
+	and data is unaffected. I attempt to address each failure-mode within
+	the context of each decision point in the software development lifecycle.
+      </p>
+      <p>
+	Quiet errors are addressed through proper language selection, pervasive use of tagged logging
+	and application process monitoring, and alerting, to make any failure as loud as possible.
+	I prefer to use languages that are inherently safer, like Rust, as their goal is to detect
+	and call out as many errors as possible at compile time, before the code ever runs. Using
+	tagged logging and APM I'm able to create dashboards that give live insight into running
+	code, allowing me to answer questions like "what were the most common errors this month?" or
+	"what was the full chain of events leading up this error?". Since this information is queryable,
+	I can then connect alerting mechanisms which message or call me when anything seems out of the
+	ordinary.
+      </p>
+      <p>
+	Catastrophic errors are dealt with using smart infrastructure. All of my software is
+	containerized and can be run across a broad variety of clouds or container orchestration
+	tools. Almost all of these tools can be leveraged to detect crashed or frozen code and
+	immediately restart it to avoid disruption to the users. Frequently, it's possible to have
+	more than one instance of the code running to immediately take over in case the other
+	crashes for uninterrupted service.
+      </p>
+      <p>
+	Harmful failures can be partially prevented via conscientious development, but if we assume
+	that they can and will happen, the most important step is to provide smooth recovery from
+	them. All stored data is snapshotted on a daily basis with those snapshots kept on the
+	short-term to minimize costs, with longer-term backups made less frequently and stored in
+	cheaper storage. Potentially destructive operations are always authenticated to identify
+	who performed them, and logged using whichever activity logging mechanisms are provided by the
+	storage.
+      </p>
+      <p>
+	I attempt to minimize the number of errors which could possibly happen at run-time, and when
+	they still do, I provide intelligent recovery systems that reset the software to a working
+	state automatically.
+      </p>
+      <div id="footer">
+	<p><a href="/">&larr;Back</a></p>
+      </div>
+    </div>
+  </body>
+</html>
