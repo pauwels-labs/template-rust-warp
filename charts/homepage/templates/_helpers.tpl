@@ -57,7 +57,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{ .Rule.host }}
 {{- end -}}
 {{- else if .Rule.useEnvRootHost -}}
-{{- printf "%s%s" .Rule.subdomain (include "baseEnvUrl" .Global) -}}
+{{- printf "%s%s" (default "" .Rule.subdomain) (include "baseEnvUrl" .Global) -}}
 {{- else if .Rule.useRootHost -}}
 {{- printf "%s%s" (default "" .Rule.subdomain) .Global.Values.jxRequirements.ingress.domain -}}
 {{- else -}}
