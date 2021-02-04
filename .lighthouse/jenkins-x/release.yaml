@@ -36,7 +36,7 @@ spec:
           script: |
             #!/bin/sh
             cp ~/.cargo/bin/homepage .
-        - image: gcr.io/jenkinsxio/builder-rust:2.1.150-769
+        - image: gcr.io/kaniko-project/executor:debug-v1.3.0
           name: build-debug
           resources: {}
           script: |
