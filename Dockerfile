@@ -18,7 +18,6 @@ RUN cargo build --release
 
 # Load source code to create final binary
 RUN rm -rf src
-RUN ls target && echo "===" && ls target/release && echo "===" && ls target/release/deps
 RUN rm -rf target/release/deps/homepage*
 COPY src src
 COPY static static
