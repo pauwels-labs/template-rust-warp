@@ -91,11 +91,11 @@ ingress:
     # The <environment-name> variable is defined inside of templates/_helpers.tpl, and is currently
     # defined as the deployed namespace name with any 'jx-' prefix trimmed.
     global:
-    - useRootHost: true
+    - useEnvRootHost: true
       paths:
       - "/"
       - "/static"
-    - useRootHost: true
+    - useEnvRootHost: true
       subdomain: www.
       paths:
       - "/"
