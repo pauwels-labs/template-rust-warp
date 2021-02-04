@@ -26,7 +26,11 @@ spec:
           resources: {}
         - name: jx-variables
           resources: {}
-        - name: build-cargo-install
+        - name: build-cargo-install-custom
+          image: rust:alpine-3.12
+          script: |
+            #!/bin/sh
+            cargo install --path .
           resources: {}
         - name: build-container-build
           resources: {}
