@@ -40,7 +40,7 @@ spec:
           name: build-debug
           resources: {}
           script: |
-            #!/bin/sh
+            #!/busybox/sh
             sleep 999999
         - name: build-container-build
           resources: {}
