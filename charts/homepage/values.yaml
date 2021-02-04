@@ -1,9 +1,9 @@
 # values we use from the `jx-requirements.yml` file if we are using helmfile and helm 3
 jxRequirements:
   ingress:
-    domain: ""
+    domain: svc.cluster.local
     externalDNS: false
-    namespaceSubDomain: -jx.
+    namespaceSubDomain: .local.
     serviceType: ""
     tls:
       email: ""
@@ -44,20 +44,26 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 2000
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
 
 service:
   type: ClusterIP
   port: 8080
+
+env: {}
+
+deployment: {}
+  # labels: {}
+  # annotations: {}
 
 ingress:
   enabled: true
@@ -72,33 +78,44 @@ ingress:
       nginx.ingress.kubernetes.io/limit-rate-after: '100'
       nginx.ingress.kubernetes.io/limit-rate: '50'
   hosts:
+    # The subdomain/domain parameters in the following configuration are special as they allow
+    # for customization per-environment. This means you can have the deployments automatically
+    # configured to use a URL that looks like some-prefix.<environment-name>.some-suffix. Examples:
+    # - host: subdomain.domain.com -> In this case, since this is using the static 'host' parameter,
+    #                                 the URL used would be 'subdomain.domain.com'
+    # - hostPrefix: subdomain.
+    #   hostSuffix: .domain.com    -> In this case, since this is using the dynamic 'hostPrefix' and
+    #                                 'hostSuffix' parameters, the URL used would be
+    #                                 'subdomain.<environment-name>.domain.com'
+    #
+    # The <environment-name> variable is defined inside of templates/_helpers.tpl, and is currently
+    # defined as the deployed namespace name with any 'jx-' prefix trimmed.
     global:
-    - host: pauwelslabs.com
+    - useRootHost: true
       paths:
       - "/"
       - "/static"
-    - host: www.pauwelslabs.com
+    - useRootHost: true
+      subdomain: www.
       paths:
       - "/"
       - "/static"
     ratelimited:
-    - host: pauwelslabs.com
+    - useEnvRootHost: true
       paths:
       - "/message"
-    - host: www.pauwelslabs.com
+    - useEnvRootHost: true
+      subdomain: www.
       paths:
       - "/message"
-  tls:
-  - secretName: homepage-tls
-    hosts:
-    - pauwelslabs.com
-    - www.pauwelslabs.com
+  tls: true
+  additionalTLS: []
+  # - secretName: tls-secrets
+  #   hosts:
+  #   - pauwelslabs.com
+  #   - www.pauwelslabs.com
 
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -127,3 +144,10 @@ tls:
     urls:
     - pauwelslabs.com
     - www.pauwelslabs.com
+
+extraVolumeMounts:
+  default:
+  - name: config
+    mountPath: /etc/config
+
+extraVolumes: []

@@ -1,55 +1,71 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "homepage.fullname" . }}
+  name: {{ include "fullname" . }}
   labels:
-    {{- include "homepage.labels" . | nindent 4 }}
+    {{- include "labels" . | nindent 4 }}
+    {{- if hasKey .Values.deployment "labels" }}
+    {{ toYaml .Values.deployment.labels | trim | indent 4 }}
+    {{- end }}
+  {{- if hasKey .Values.deployment "annotations" }}
+  annotations:
+    {{ toYaml .Values.deployment.annotations | trim | indent 4 }}
+  {{- end }}
 spec:
 {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ default 1 .Values.replicaCount }}
 {{- end }}
   selector:
     matchLabels:
-      {{- include "homepage.selectorLabels" . | nindent 6 }}
+      {{- include "selectorLabels" . | nindent 6 }}
   template:
     metadata:
-    {{- with .Values.podAnnotations }}
+      {{- if hasKey .Values.deployment "annotations" }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
+        {{ toYaml .Values.deployment.annotations | trim | indent 8 }}
+      {{- end }}
       labels:
-        {{- include "homepage.selectorLabels" . | nindent 8 }}
+        {{- include "selectorLabels" . | nindent 8 }}
+        {{- if hasKey .Values.deployment "labels" }}
+        {{ toYaml .Values.deployment.labels | trim | indent 4 }}
+        {{- end }}
     spec:
-      serviceAccountName: {{ include "homepage.serviceAccountName" . }}
+      serviceAccountName: {{ include "serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          envFrom:
-          - secretRef:
-              name: homepage-secrets
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-          - name: config
-            mountPath: /usr/local/bin/config.yaml
-            subPath: config.yaml
+      - name: {{ include "fullname" . }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy -}}
+        {{ (include "resources" (dict "Values" .Values "ContainerName" (include "name" .))) | indent 8 }}
+        envFrom:
+        - secretRef:
+            name: {{ include "fullname" . }}-secrets
+        {{- (include "envVars" (dict "Release" .Release "Values" .Values "ContainerName" (include "name" .))) | indent 8 -}}
+        {{- if hasKey .Values.service "ports" -}}
+        {{- $ports := .Values.service.ports -}}
+        {{- $lenPorts := len $ports -}}
+        {{- if gt $lenPorts 0 -}}
+        ports:
+        {{- range $key, $port := $ports -}}
+        - containerPort: {{ $port.targetPort }}
+        {{- if hasKey $port "name" -}}
+          name: {{ $port.name }}
+        {{- end -}}
+        {{- end -}}
+        {{- end -}}
+        {{- end -}}
+        {{- if hasKey .Values "livenessProbe" -}}
+        livenessProbe:
+        {{ toYaml .Values.livenessProbe | trim | indent 10 -}}
+        {{- end -}}
+        {{- if hasKey .Values "readinessProbe" -}}
+        readinessProbe:
+        {{ toYaml .Values.readinessProbe | trim | indent 10 -}}
+        {{- end -}}
+        {{- (include "volumeMounts" (dict "Values" .Values "ContainerName" (include "name" .))) | indent 8 -}}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -65,4 +81,5 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: homepage-config
+          name: {{ include "fullname" . }}-config
+      {{ (include "volumes" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 6 }}
