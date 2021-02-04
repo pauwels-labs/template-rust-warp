@@ -84,7 +84,10 @@ Create the name of the service account to use
 #            Ideally, jx will provide a way to add arbitrary values to .Values.jxRequirements that
 #            depend on the namespace being deployed to.
 {{- define "environmentName" -}}
-{{- default "default" (trimPrefix "jx-" .Release.Namespace) -}}
+{{- $envFromNamespace := (default "default" (trimPrefix "jx-" .Release.Namespace)) -}}
+{{- if eq $envFromNamespace "development" -}}
+dev
+{{- end -}}
 {{- end -}}
 
 {{- define "baseEnvUrl" -}}
