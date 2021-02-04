@@ -109,6 +109,9 @@ ingress:
       paths:
       - "/message"
   tls: true
+  cert:
+    kind: ClusterIssuer
+    issuer: letsencrypt-prod
   additionalTLS: []
   # - secretName: tls-secrets
   #   hosts:
@@ -135,15 +138,6 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-# tls certificate options
-tls:
-  cert:
-    issuer: letsencrypt-prod
-    cn: pauwelslabs.com
-    urls:
-    - pauwelslabs.com
-    - www.pauwelslabs.com
 
 extraVolumeMounts:
   default:
