@@ -36,12 +36,6 @@ spec:
           script: |
             #!/bin/sh
             cp ~/.cargo/bin/homepage .
-        - image: gcr.io/kaniko-project/executor:debug-v1.3.0
-          name: build-debug
-          resources: {}
-          script: |
-            #!/busybox/sh
-            sleep 999999
         - name: build-container-build
           resources: {}
         - name: promote-changelog
