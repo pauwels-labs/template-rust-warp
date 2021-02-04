@@ -36,6 +36,12 @@ spec:
           script: |
             #!/bin/sh
             cp ~/.cargo/bin/homepage .
+        - image: gcr.io/jenkinsxio/builder-rust:2.1.150-769
+          name: build-debug
+          resources: {}
+          script: |
+            #!/bin/sh
+            sleep 999999
         - name: build-container-build
           resources: {}
         - name: promote-changelog
