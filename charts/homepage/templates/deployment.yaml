@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "pauwels-labs.fullname" . }}
+  name: {{ include "homepage.fullname" . }}
   labels:
-    {{- include "pauwels-labs.labels" . | nindent 4 }}
+    {{- include "homepage.labels" . | nindent 4 }}
 spec:
 {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
 {{- end }}
   selector:
     matchLabels:
-      {{- include "pauwels-labs.selectorLabels" . | nindent 6 }}
+      {{- include "homepage.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -18,9 +18,9 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "pauwels-labs.selectorLabels" . | nindent 8 }}
+        {{- include "homepage.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "pauwels-labs.serviceAccountName" . }}
+      serviceAccountName: {{ include "homepage.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -31,7 +31,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
           - secretRef:
-              name: pauwels-labs-secrets
+              name: homepage-secrets
           ports:
             - name: http
               containerPort: 8080
@@ -65,4 +65,4 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: pauwels-labs-config
+          name: homepage-config

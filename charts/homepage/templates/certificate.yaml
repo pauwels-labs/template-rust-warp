@@ -1,11 +1,11 @@
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
-  name: {{ include "pauwels-labs.fullname" . }}
+  name: {{ include "homepage.fullname" . }}
   labels:
-  {{- include "pauwels-labs.labels" . | nindent 4 }}
+  {{- include "homepage.labels" . | nindent 4 }}
 spec:
-  secretName: pauwels-labs-tls
+  secretName: homepage-tls
   duration: 2160h # 90d
   renewBefore: 360h # 15d
   organization:

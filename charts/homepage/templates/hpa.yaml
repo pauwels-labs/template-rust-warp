@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "pauwels-labs.fullname" . }}
+  name: {{ include "homepage.fullname" . }}
   labels:
-    {{- include "pauwels-labs.labels" . | nindent 4 }}
+    {{- include "homepage.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "pauwels-labs.fullname" . }}
+    name: {{ include "homepage.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

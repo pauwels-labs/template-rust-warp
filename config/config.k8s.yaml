@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: pauwels-labs-config
+  name: homepage-config
 data:
   config.yaml: |
     slack:
