@@ -80,6 +80,6 @@ spec:
       {{- end }}
       volumes:
       - name: config
-        configMap:
-          name: {{ include "fullname" . }}-config
+        secret:
+          secretName: {{ include "fullname" . }}-config
       {{ (include "volumes" (dict "Values" .Values "ContainerName" (include "name" .))) | trim | indent 6 }}
