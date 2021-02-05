@@ -110,6 +110,7 @@ ingress:
       - "/message"
   tls: true
   cert:
+    create: false
     kind: ClusterIssuer
     issuer: letsencrypt-prod
   additionalTLS: []
