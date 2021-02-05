@@ -96,19 +96,23 @@ ingress:
     # defined as the deployed namespace name with any 'jx-' prefix trimmed.
     global:
     - useEnvRootHost: true
+      servicePort: http
       paths:
       - "/"
       - "/static"
     - useEnvRootHost: true
+      servicePort: http
       subdomain: www.
       paths:
       - "/"
       - "/static"
     ratelimited:
     - useEnvRootHost: true
+      servicePort: http
       paths:
       - "/message"
     - useEnvRootHost: true
+      servicePort: http
       subdomain: www.
       paths:
       - "/message"
