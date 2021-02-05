@@ -18,7 +18,7 @@ RUN cargo build --release
 
 # Load source code to create final binary
 RUN rm -rf src
-RUN rm -rf target/release/deps/service*
+RUN rm -rf target/release/deps/homepage*
 COPY src src
 COPY static static
 RUN cargo build --release
@@ -34,7 +34,7 @@ USER service:service
 
 # Copy binary and static files
 WORKDIR /usr/local/bin
-COPY --from=builder /usr/src/service/target/release/service .
+COPY --from=builder /usr/src/service/target/release/homepage service
 COPY --from=builder /usr/src/service/static ./static
 
 ENTRYPOINT ["service"]
