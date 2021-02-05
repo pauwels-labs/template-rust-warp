@@ -87,6 +87,8 @@ Create the name of the service account to use
 {{- $envFromNamespace := (default "default" (trimPrefix "jx-" .Release.Namespace)) -}}
 {{- if eq $envFromNamespace "development" -}}
 dev
+{{- else -}}
+{{ $envFromNamespace }}
 {{- end -}}
 {{- end -}}
 
