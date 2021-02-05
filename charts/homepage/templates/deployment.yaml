@@ -42,7 +42,7 @@ spec:
         {{ (include "resources" (dict "Values" .Values "ContainerName" (include "name" .))) | indent 8 }}
         envFrom:
         - secretRef:
-            name: {{ include "fullname" . }}-secrets
+            name: {{ include "fullname" . }}-env
         {{- (include "envVars" (dict "Release" .Release "Values" .Values "ContainerName" (include "name" .))) | indent 8 -}}
         {{- if hasKey .Values.service "ports" -}}
         {{- $ports := .Values.service.ports -}}
