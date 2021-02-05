@@ -127,22 +127,22 @@ volumeMounts:
 {{- end }}
 
 {{- define "envVars" -}}
-{{- if hasKey .Values.env .ContainerName }}
-{{- $extraEnvs := index .Values.env .ContainerName }}
-{{- $lenExtraEnvs := len $extraEnvs }}
-{{- if gt $lenExtraEnvs 0 }}
+{{- if hasKey .Values.env .ContainerName -}}
+{{- $extraEnvs := index .Values.env .ContainerName -}}
+{{- $lenExtraEnvs := len $extraEnvs -}}
+{{- if gt $lenExtraEnvs 0 -}}
 env:
 {{ toYaml $extraEnvs }}
-{{- end }}
-{{- else if hasKey .Values.env "default" }}
-{{- $extraEnvs := index .Values.env "default" }}
-{{- $lenExtraEnvs := len $extraEnvs }}
-{{- if gt $lenExtraEnvs 0 }}
+{{- end -}}
+{{- else if hasKey .Values.env "default" -}}
+{{- $extraEnvs := index .Values.env "default" -}}
+{{- $lenExtraEnvs := len $extraEnvs -}}
+{{- if gt $lenExtraEnvs 0 -}}
 env:
 {{ toYaml $extraEnvs }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 
 {{- define "resources" -}}
 {{- if hasKey .Values.resources .ContainerName }}

@@ -47,11 +47,11 @@ spec:
         {{- if hasKey .Values.service "ports" -}}
         {{- $ports := .Values.service.ports -}}
         {{- $lenPorts := len $ports -}}
-        {{- if gt $lenPorts 0 -}}
+        {{ if gt $lenPorts 0 }}
         ports:
-        {{- range $key, $port := $ports -}}
+        {{- range $key, $port := $ports }}
         - containerPort: {{ $port.targetPort }}
-        {{- if hasKey $port "name" -}}
+        {{- if hasKey $port "name" }}
           name: {{ $port.name }}
         {{- end -}}
         {{- end -}}

@@ -56,8 +56,12 @@ securityContext:
   runAsUser: 1000
 
 service:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
   type: ClusterIP
-  port: 8080
 
 env: {}
 
