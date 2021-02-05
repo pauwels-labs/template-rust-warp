@@ -143,6 +143,6 @@ affinity: {}
 extraVolumeMounts:
   default:
   - name: config
-    mountPath: /etc/config
+    mountPath: /usr/local/bin/config
 
 extraVolumes: []
