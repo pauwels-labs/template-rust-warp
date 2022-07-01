@@ -3,9 +3,7 @@ use reqwest::Client;
 use rust_config::Configurator;
 use serde::Serialize;
 use serde_json::json;
-use std::collections::HashMap;
-use std::sync::Arc;
-use std::{thread, time};
+use std::{collections::HashMap, sync::Arc, thread, time};
 use warp::Filter;
 
 struct WithTemplate<T: Serialize> {
