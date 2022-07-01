@@ -5,6 +5,7 @@ use serde::Serialize;
 use serde_json::json;
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::{thread, time};
 use warp::Filter;
 
 struct WithTemplate<T: Serialize> {
@@ -34,6 +35,11 @@ async fn main() {
 
     let handlebars = move |with_template| render(with_template, hb.clone());
 
+    let simulated_load_time = time::Duration::from_millis(2000);
+    let now = time::Instant::now();
+    thread::sleep(simulated_load_time);
+    assert!(now.elapsed() >= simulated_load_time);
+    
     let index_route = warp::path::end()
         .map(|| WithTemplate {
             name: "index",
