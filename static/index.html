@@ -15,6 +15,9 @@
   <body>
     <div id="content-wrapper">
       <h1><span id="header"><span class="neg-highlight">This is Pauwels Labs</span></span></h1>
+      {{#if sleep-success-msg}}
+	    <span class="success">{{ sleep-success-msg }}</span>
+	    {{/if}}
       <p>
         I build
         <a href="expandable">expandable</a>,

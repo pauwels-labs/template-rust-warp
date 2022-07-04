@@ -1,11 +1,15 @@
 use handlebars::Handlebars;
-use reqwest::Client;
+use reqwest::{Client};
 use rust_config::Configurator;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use serde_json::json;
 use std::{collections::HashMap, sync::Arc, thread, time};
-use warp::Filter;
+use warp::{Rejection, Filter};
 
+#[derive(Deserialize, Serialize)]
+struct MyObject {
+    length: u64,
+}
 struct WithTemplate<T: Serialize> {
     name: &'static str,
     value: T,
@@ -32,11 +36,6 @@ async fn main() {
     let hb = Arc::new(hb);
 
     let handlebars = move |with_template| render(with_template, hb.clone());
-
-    let simulated_load_time = time::Duration::from_millis(2000);
-    let now = time::Instant::now();
-    thread::sleep(simulated_load_time);
-    assert!(now.elapsed() >= simulated_load_time);
     
     let index_route = warp::path::end()
         .map(|| WithTemplate {
@@ -44,20 +43,44 @@ async fn main() {
             value: json!({}),
         })
         .map(handlebars.clone());
+
     let expandable_route =
         warp::path!("expandable").and(warp::fs::file("./static/expandable.html"));
-    let scalable_route = warp::path!("scalable").and(warp::fs::file("./static/scalable.html"));
+    let scalable_route = 
+    warp::path!("scalable").and(warp::fs::file("./static/scalable.html"));
     let highly_available_route =
         warp::path!("highly-available").and(warp::fs::file("./static/highly-available.html"));
     let full_stack_route =
         warp::path!("full-stack").and(warp::fs::file("./static/full-stack.html"));
     let full_service_route =
         warp::path!("full-service").and(warp::fs::file("./static/full-service.html"));
-    let cloud_route = warp::path!("cloud").and(warp::fs::file("./static/cloud.html"));
-    let css_routes = warp::path!("css" / ..).and(warp::fs::dir("./static/css"));
+    let cloud_route = 
+        warp::path!("cloud").and(warp::fs::file("./static/cloud.html"));
+    let css_routes = 
+        warp::path!("css" / ..).and(warp::fs::dir("./static/css"));
 
-    let slack_webhook_url = config.get_str("slack.webhook").unwrap();
-    let message_route = warp::path!("message")
+    let slack_webhook_url = 
+        config.get_str("slack.webhook").unwrap();
+
+    let sleep_route = warp::path!("sleep")
+    .and(warp::query::<HashMap<String, u64>>())
+    .map(|p: HashMap<String, u64>| match p.get("length") {
+        Some(length) => length.to_owned(),
+        None => 1000u64,
+    })
+    .and_then(move |length: u64| async move {
+        let simulated_load_time = time::Duration::from_millis(length);
+        let time_taken_message = format!("Successfully slept {length} milliseconds");
+        thread::sleep(simulated_load_time);
+        Ok::<_, Rejection>(WithTemplate {
+            name: "index",
+            value: json!({ "sleep-success-msg": time_taken_message }),
+        })
+    })
+    .map(handlebars.clone());
+
+    let message_route = 
+        warp::path!("message")
         .and(warp::post())
         .and(warp::body::content_length_limit(1024 * 20))
         .and(warp::body::form())
@@ -108,7 +131,8 @@ async fn main() {
         .or(full_service_route)
         .or(cloud_route)
         .or(css_routes)
-        .or(message_route);
+        .or(message_route)
+        .or(sleep_route);
 
     warp::serve(static_routes).run(([0, 0, 0, 0], 8080)).await;
 }
