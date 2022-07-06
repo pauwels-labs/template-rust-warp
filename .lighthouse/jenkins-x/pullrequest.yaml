@@ -33,8 +33,10 @@ spec:
             cp /tekton/creds-secrets/tekton-container-registry-auth/.dockerconfigjson /kaniko/.docker/config.json
             mkdir /kaniko/cache
             /kaniko/executor $KANIKO_FLAGS --context=/workspace/source --dockerfile=Dockerfile.test --no-push --cache=true --cache-dir=/kaniko/cache --cache-repo=$DOCKER_REGISTRY/$DOCKER_REGISTRY_ORG/$APP_NAME/cache --build-arg REPO_TOKEN=$(cat /coveralls/$APP_NAME)
-        - name: promote-jx-preview
-          resources: {}
+        volumes:
+        - name: coveralls-repo-tokens
+          secret:
+            secretName: coveralls-repo-tokens
   podTemplate: {}
   serviceAccountName: tekton-bot
   timeout: 240h0m0s
