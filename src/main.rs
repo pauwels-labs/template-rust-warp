@@ -1,12 +1,20 @@
 use handlebars::Handlebars;
+use redact_config::Configurator;
 use reqwest::Client;
-use rust_config::Configurator;
-use serde::Serialize;
-use serde_json::json;
-use std::collections::HashMap;
-use std::sync::Arc;
-use warp::Filter;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use std::{
+    collections::HashMap,
+    sync::Arc,
+    thread,
+    time::{self, Duration, Instant},
+};
+use warp::{Filter, Rejection};
 
+#[derive(Deserialize, Serialize)]
+struct MyObject {
+    length: u64,
+}
 struct WithTemplate<T: Serialize> {
     name: &'static str,
     value: T,
@@ -22,9 +30,140 @@ where
     warp::reply::html(render)
 }
 
+fn sleep() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Rejection> + Copy {
+    warp::path!("sleep")
+        .and(warp::query::<HashMap<String, String>>())
+        .map(|p: HashMap<String, String>| match p.get("length") {
+            Some(length) => length.to_owned(),
+            None => "1000".to_owned(),
+        })
+        .and_then(move |length: String| async move {
+            match length.parse::<u64>() {
+                Ok(length) => {
+                    if length > 10000 {
+                        Ok::<_, Rejection>(WithTemplate {
+                            name: "index",
+                            value: json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}),
+                        })
+                    } else {
+                    let simulated_load_time = time::Duration::from_millis(length);
+                    let time_taken_message = format!("Successfully slept {length} milliseconds");
+                    thread::sleep(simulated_load_time);
+                    Ok::<_, Rejection>(WithTemplate {
+                        name: "index",
+                        value: json!({ "sleep-success-msg": time_taken_message }),
+                    })
+                }
+                }
+                Err(_) => {
+                    Ok::<_, Rejection>(WithTemplate {
+                        name: "index",
+                        value: json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}),
+                    })
+                }
+            }
+        })
+}
+
+#[tokio::test]
+async fn test_sleep_default() {
+    let filter = sleep();
+    let before = Instant::now();
+    let value = warp::test::request()
+        .path("/sleep")
+        .filter(&filter)
+        .await
+        .unwrap();
+    let after = before.elapsed();
+    assert_eq!(value.name, "index");
+    assert_eq!(
+        value.value,
+        json!({ "sleep-success-msg": "Successfully slept 1000 milliseconds" })
+    );
+    assert!(after >= Duration::from_millis(1000));
+}
+
+#[tokio::test]
+async fn test_sleep_custom_length() {
+    let filter = sleep();
+    let before = Instant::now();
+    let value = warp::test::request()
+        .path("/sleep?length=3000")
+        .filter(&filter)
+        .await
+        .unwrap();
+    let after = before.elapsed();
+    assert_eq!(value.name, "index");
+    assert_eq!(
+        value.value,
+        json!({ "sleep-success-msg": "Successfully slept 3000 milliseconds" })
+    );
+    assert!(after >= Duration::from_millis(3000));
+}
+
+#[tokio::test]
+async fn test_sleep_below_edge_case() {
+    let filter = sleep();
+    let before = Instant::now();
+    let value = warp::test::request()
+        .path("/sleep?length=9999")
+        .filter(&filter)
+        .await
+        .unwrap();
+    let after = before.elapsed();
+    assert_eq!(value.name, "index");
+    assert_eq!(
+        value.value,
+        json!({ "sleep-success-msg": "Successfully slept 9999 milliseconds" })
+    );
+    assert!(after >= Duration::from_millis(9999));
+}
+
+#[tokio::test]
+async fn test_sleep_at_edge_case() {
+    let filter = sleep();
+    let before = Instant::now();
+    let value = warp::test::request()
+        .path("/sleep?length=10000")
+        .filter(&filter)
+        .await
+        .unwrap();
+    let after = before.elapsed();
+    assert_eq!(value.name, "index");
+    assert_eq!(
+        value.value,
+        json!({ "sleep-success-msg": "Successfully slept 10000 milliseconds" })
+    );
+    assert!(after >= Duration::from_millis(10000));
+}
+
+#[tokio::test]
+async fn test_sleep_non_integer_length() {
+    let filter = sleep();
+    let value = warp::test::request()
+        .path("/sleep?length=string")
+        .filter(&filter)
+        .await
+        .unwrap();
+    assert_eq!(value.name, "index");
+    assert_eq!(value.value, json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}));
+}
+
+#[tokio::test]
+async fn test_sleep_above_edge_case() {
+    let filter = sleep();
+    let value = warp::test::request()
+        .path("/sleep?length=10001")
+        .filter(&filter)
+        .await
+        .unwrap();
+    assert_eq!(value.name, "index");
+    assert_eq!(value.value, json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}));
+}
+
 #[tokio::main]
 async fn main() {
-    let config = rust_config::new("WEBSITE").unwrap();
+    let config = redact_config::new("WEBSITE").unwrap();
 
     let mut hb = Handlebars::new();
     hb.register_template_file("index", "./static/index.html")
@@ -40,6 +179,7 @@ async fn main() {
             value: json!({}),
         })
         .map(handlebars.clone());
+
     let expandable_route =
         warp::path!("expandable").and(warp::fs::file("./static/expandable.html"));
     let scalable_route = warp::path!("scalable").and(warp::fs::file("./static/scalable.html"));
@@ -53,6 +193,9 @@ async fn main() {
     let css_routes = warp::path!("css" / ..).and(warp::fs::dir("./static/css"));
 
     let slack_webhook_url = config.get_str("slack.webhook").unwrap();
+
+    let sleep_route = sleep().map(handlebars.clone());
+
     let message_route = warp::path!("message")
         .and(warp::post())
         .and(warp::body::content_length_limit(1024 * 20))
@@ -81,17 +224,17 @@ async fn main() {
                     .json(&slack_body_map)
                     .send()
                     .await
-    		    .map_or_else(|_| {
-    			Ok(WithTemplate {
-    			    name: "index",
-    			    value: json!({ "msg": msg, "error-msg": "An error occurred while sending, try again in a little bit" }),
-    			})
-    		    }, |_| {
-    			Ok(WithTemplate {
-    			    name: "index",
-    			    value: json!({ "success-msg": "Message received, expect a response within 24 hours" }),
-    			})
-    		    })
+                .map_or_else(|_| {
+                Ok(WithTemplate {
+                    name: "index",
+                    value: json!({ "msg": msg, "error-msg": "An error occurred while sending, try again in a little bit" }),
+                })
+                }, |_| {
+                Ok(WithTemplate {
+                    name: "index",
+                    value: json!({ "success-msg": "Message received, expect a response within 24 hours" }),
+                })
+                })
             }
         })
         .map(handlebars.clone());
@@ -104,7 +247,8 @@ async fn main() {
         .or(full_service_route)
         .or(cloud_route)
         .or(css_routes)
-        .or(message_route);
+        .or(message_route)
+        .or(sleep_route);
 
     warp::serve(static_routes).run(([0, 0, 0, 0], 8080)).await;
 }
