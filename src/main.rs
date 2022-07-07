@@ -3,12 +3,7 @@ use redact_config::Configurator;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::{
-    collections::HashMap,
-    sync::Arc,
-    thread,
-    time::{self, Duration, Instant},
-};
+use std::{collections::HashMap, sync::Arc, thread, time};
 use warp::{Filter, Rejection};
 
 #[derive(Deserialize, Serialize)]
@@ -65,100 +60,113 @@ fn sleep() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Reject
         })
 }
 
-#[tokio::test]
-async fn test_sleep_default() {
-    let filter = sleep();
-    let before = Instant::now();
-    let value = warp::test::request()
-        .path("/sleep")
-        .filter(&filter)
-        .await
-        .unwrap();
-    let after = before.elapsed();
-    assert_eq!(value.name, "index");
-    assert_eq!(
-        value.value,
-        json!({ "sleep-success-msg": "Successfully slept 1000 milliseconds" })
-    );
-    assert!(after >= Duration::from_millis(1000));
-}
+#[cfg(test)]
+mod test {
+    use super::sleep;
+    use serde_json::json;
+    use std::time::{Duration, Instant};
+    
+    #[tokio::test]
+    async fn test_sleep_default() {
+        let filter = sleep();
+        let before = Instant::now();
+        let value = warp::test::request()
+            .path("/sleep")
+            .filter(&filter)
+            .await
+            .unwrap();
+        let after = before.elapsed();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "sleep-success-msg": "Successfully slept 1000 milliseconds" })
+        );
+        assert!(after >= Duration::from_millis(1000));
+    }
 
-#[tokio::test]
-async fn test_sleep_custom_length() {
-    let filter = sleep();
-    let before = Instant::now();
-    let value = warp::test::request()
-        .path("/sleep?length=3000")
-        .filter(&filter)
-        .await
-        .unwrap();
-    let after = before.elapsed();
-    assert_eq!(value.name, "index");
-    assert_eq!(
-        value.value,
-        json!({ "sleep-success-msg": "Successfully slept 3000 milliseconds" })
-    );
-    assert!(after >= Duration::from_millis(3000));
-}
+    #[tokio::test]
+    async fn test_sleep_custom_length() {
+        let filter = sleep();
+        let before = Instant::now();
+        let value = warp::test::request()
+            .path("/sleep?length=3000")
+            .filter(&filter)
+            .await
+            .unwrap();
+        let after = before.elapsed();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "sleep-success-msg": "Successfully slept 3000 milliseconds" })
+        );
+        assert!(after >= Duration::from_millis(3000));
+    }
 
-#[tokio::test]
-async fn test_sleep_below_edge_case() {
-    let filter = sleep();
-    let before = Instant::now();
-    let value = warp::test::request()
-        .path("/sleep?length=9999")
-        .filter(&filter)
-        .await
-        .unwrap();
-    let after = before.elapsed();
-    assert_eq!(value.name, "index");
-    assert_eq!(
-        value.value,
-        json!({ "sleep-success-msg": "Successfully slept 9999 milliseconds" })
-    );
-    assert!(after >= Duration::from_millis(9999));
-}
+    #[tokio::test]
+    async fn test_sleep_below_edge_case() {
+        let filter = sleep();
+        let before = Instant::now();
+        let value = warp::test::request()
+            .path("/sleep?length=9999")
+            .filter(&filter)
+            .await
+            .unwrap();
+        let after = before.elapsed();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "sleep-success-msg": "Successfully slept 9999 milliseconds" })
+        );
+        assert!(after >= Duration::from_millis(9999));
+    }
 
-#[tokio::test]
-async fn test_sleep_at_edge_case() {
-    let filter = sleep();
-    let before = Instant::now();
-    let value = warp::test::request()
-        .path("/sleep?length=10000")
-        .filter(&filter)
-        .await
-        .unwrap();
-    let after = before.elapsed();
-    assert_eq!(value.name, "index");
-    assert_eq!(
-        value.value,
-        json!({ "sleep-success-msg": "Successfully slept 10000 milliseconds" })
-    );
-    assert!(after >= Duration::from_millis(10000));
-}
+    #[tokio::test]
+    async fn test_sleep_at_edge_case() {
+        let filter = sleep();
+        let before = Instant::now();
+        let value = warp::test::request()
+            .path("/sleep?length=10000")
+            .filter(&filter)
+            .await
+            .unwrap();
+        let after = before.elapsed();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "sleep-success-msg": "Successfully slept 10000 milliseconds" })
+        );
+        assert!(after >= Duration::from_millis(10000));
+    }
 
-#[tokio::test]
-async fn test_sleep_non_integer_length() {
-    let filter = sleep();
-    let value = warp::test::request()
-        .path("/sleep?length=string")
-        .filter(&filter)
-        .await
-        .unwrap();
-    assert_eq!(value.name, "index");
-    assert_eq!(value.value, json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}));
-}
+    #[tokio::test]
+    async fn test_sleep_non_integer_length() {
+        let filter = sleep();
+        let value = warp::test::request()
+            .path("/sleep?length=string")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"})
+        );
+    }
 
-#[tokio::test]
-async fn test_sleep_above_edge_case() {
-    let filter = sleep();
-    let value = warp::test::request()
-        .path("/sleep?length=10001")
-        .filter(&filter)
-        .await
-        .unwrap();
-    assert_eq!(value.name, "index");
-    assert_eq!(value.value, json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}));
+    #[tokio::test]
+    async fn test_sleep_above_edge_case() {
+        let filter = sleep();
+        let value = warp::test::request()
+            .path("/sleep?length=10001")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"})
+        );
+    }
 }
 
 #[tokio::main]
