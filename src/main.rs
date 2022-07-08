@@ -1,15 +1,13 @@
 use handlebars::Handlebars;
+use rand::distributions::Alphanumeric;
+use rand::Rng;
 use redact_config::Configurator;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::{collections::HashMap, sync::Arc, thread, time::{self, Duration}};
+use sha2::{Digest, Sha512};
+use std::{collections::HashMap, sync::Arc};
 use warp::{Filter, Rejection};
-use prometheus::Encoder;
-use prometheus_exporter::{
-    self,
-    prometheus::register_counter,
-};
 
 #[derive(Deserialize, Serialize)]
 struct MyObject {
@@ -40,25 +38,35 @@ fn sleep() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Reject
         .and_then(move |length: String| async move {
             match length.parse::<u64>() {
                 Ok(length) => {
-                    if length > 10000 {
+                    if length > 1000000 {
                         Ok::<_, Rejection>(WithTemplate {
                             name: "index",
-                            value: json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}),
+                            value: json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 1,000,000"}),
                         })
                     } else {
-                    let simulated_load_time = time::Duration::from_millis(length);
-                    let time_taken_message = format!("Successfully slept {length} milliseconds");
-                    thread::sleep(simulated_load_time);
-                    Ok::<_, Rejection>(WithTemplate {
-                        name: "index",
-                        value: json!({ "sleep-success-msg": time_taken_message }),
-                    })
+                        let mut map: HashMap<u64, String> = HashMap::new();
+                        for n in 0..length {
+                            let mut hasher = Sha512::new();
+                            let rand_string: String = rand::thread_rng()
+                                .sample_iter(&Alphanumeric)
+                                .take(64)
+                                .map(char::from)
+                                .collect();
+                            hasher.update(rand_string);
+                            let result = format!("{:x}", hasher.finalize());
+                            map.insert(n, result);
+                        }
+                        let hash_message = format!("Successfully hashed {length} times");
+                        Ok::<_, Rejection>(WithTemplate {
+                            name: "index",
+                            value: json!({ "sleep-success-msg": hash_message }),
+                        })
                 }
                 }
                 Err(_) => {
                     Ok::<_, Rejection>(WithTemplate {
                         name: "index",
-                        value: json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}),
+                        value: json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 1,000,000"}),
                     })
                 }
             }
@@ -70,7 +78,7 @@ mod test {
     use super::sleep;
     use serde_json::json;
     use std::time::{Duration, Instant};
-    
+
     #[tokio::test]
     async fn test_sleep_default() {
         let filter = sleep();
@@ -177,23 +185,10 @@ mod test {
 #[tokio::main]
 async fn main() {
     let binding = "127.0.0.1:9184".parse().unwrap();
-    // Will create an exporter and start the http server using the given binding.
-    // If the webserver can't bind to the given binding it will fail with an error.
-    prometheus_exporter::start(binding).unwrap();
-    // A default ProcessCollector is registered automatically.
-    // let mut buffer = Vec::new();
-    // let encoder = prometheus::TextEncoder::new();
-    // for _ in 0..5 {
-    //     let metric_families = prometheus::gather();
-    //     encoder.encode(&metric_families, &mut buffer).unwrap();
+    let exporter = prometheus_exporter::start(binding).unwrap();
+    let guard = exporter.wait_request();
+    drop(guard);
 
-    //     // Output to the standard output.
-    //     println!("{}", String::from_utf8(buffer.clone()).unwrap());
-
-    //     buffer.clear();
-    //     thread::sleep(Duration::from_secs(1));
-    // }
-    
     let config = redact_config::new("WEBSITE").unwrap();
 
     let mut hb = Handlebars::new();
