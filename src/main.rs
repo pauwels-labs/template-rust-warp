@@ -38,10 +38,10 @@ fn hash() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Rejecti
         .and_then(move |amount: String| async move {
             match amount.parse::<u64>() {
                 Ok(amount) => {
-                    if amount > 1000000 {
+                    if amount > 10000 {
                         Ok::<_, Rejection>(WithTemplate {
                             name: "index",
-                            value: json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 1,000,000"}),
+                            value: json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 10,000"}),
                         })
                     } else {
                         let mut map: HashMap<u64, String> = HashMap::new();
@@ -66,7 +66,7 @@ fn hash() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Rejecti
                 Err(_) => {
                     Ok::<_, Rejection>(WithTemplate {
                         name: "index",
-                        value: json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 1,000,000"}),
+                        value: json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 10,000"}),
                     })
                 }
             }
@@ -113,14 +113,14 @@ mod test {
     async fn test_hash_below_edge_case() {
         let filter = hash();
         let value = warp::test::request()
-            .path("/hash?amount=999999")
+            .path("/hash?amount=9999")
             .filter(&filter)
             .await
             .unwrap();
         assert_eq!(value.name, "index");
         assert_eq!(
             value.value,
-            json!({ "hash-success-msg": "Successfully hashed 999999 times" })
+            json!({ "hash-success-msg": "Successfully hashed 9999 times" })
         );
     }
 
@@ -128,14 +128,14 @@ mod test {
     async fn test_hash_at_edge_case() {
         let filter = hash();
         let value = warp::test::request()
-            .path("/hash?amount=1000000")
+            .path("/hash?amount=10000")
             .filter(&filter)
             .await
             .unwrap();
         assert_eq!(value.name, "index");
         assert_eq!(
             value.value,
-            json!({ "hash-success-msg": "Successfully hashed 1000000 times" })
+            json!({ "hash-success-msg": "Successfully hashed 10000 times" })
         );
     }
 
@@ -150,7 +150,7 @@ mod test {
         assert_eq!(value.name, "index");
         assert_eq!(
             value.value,
-            json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 1,000,000"})
+            json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 10,000"})
         );
     }
 
@@ -158,14 +158,14 @@ mod test {
     async fn test_hash_above_edge_case() {
         let filter = hash();
         let value = warp::test::request()
-            .path("/hash?amount=1000001")
+            .path("/hash?amount=10001")
             .filter(&filter)
             .await
             .unwrap();
         assert_eq!(value.name, "index");
         assert_eq!(
             value.value,
-            json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 1,000,000"})
+            json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 10,000"})
         );
     }
 }
