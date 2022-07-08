@@ -1,9 +1,12 @@
 use handlebars::Handlebars;
+use rand::distributions::Alphanumeric;
+use rand::Rng;
 use redact_config::Configurator;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::{collections::HashMap, sync::Arc, thread, time};
+use sha2::{Digest, Sha512};
+use std::{collections::HashMap, sync::Arc};
 use warp::{Filter, Rejection};
 
 #[derive(Deserialize, Serialize)]
@@ -25,35 +28,45 @@ where
     warp::reply::html(render)
 }
 
-fn sleep() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Rejection> + Copy {
-    warp::path!("sleep")
+fn hash() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Rejection> + Copy {
+    warp::path!("hash")
         .and(warp::query::<HashMap<String, String>>())
-        .map(|p: HashMap<String, String>| match p.get("length") {
-            Some(length) => length.to_owned(),
+        .map(|p: HashMap<String, String>| match p.get("amount") {
+            Some(amount) => amount.to_owned(),
             None => "1000".to_owned(),
         })
-        .and_then(move |length: String| async move {
-            match length.parse::<u64>() {
-                Ok(length) => {
-                    if length > 10000 {
+        .and_then(move |amount: String| async move {
+            match amount.parse::<u64>() {
+                Ok(amount) => {
+                    if amount > 10000 {
                         Ok::<_, Rejection>(WithTemplate {
                             name: "index",
-                            value: json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}),
+                            value: json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 10,000"}),
                         })
                     } else {
-                    let simulated_load_time = time::Duration::from_millis(length);
-                    let time_taken_message = format!("Successfully slept {length} milliseconds");
-                    thread::sleep(simulated_load_time);
-                    Ok::<_, Rejection>(WithTemplate {
-                        name: "index",
-                        value: json!({ "sleep-success-msg": time_taken_message }),
-                    })
+                        let mut map: HashMap<u64, String> = HashMap::new();
+                        for n in 0..amount {
+                            let mut hasher = Sha512::new();
+                            let rand_string: String = rand::thread_rng()
+                                .sample_iter(&Alphanumeric)
+                                .take(64)
+                                .map(char::from)
+                                .collect();
+                            hasher.update(rand_string);
+                            let result = format!("{:x}", hasher.finalize());
+                            map.insert(n, result);
+                        }
+                        let hash_message = format!("Successfully hashed {amount} times");
+                        Ok::<_, Rejection>(WithTemplate {
+                            name: "index",
+                            value: json!({ "hash-success-msg": hash_message }),
+                        })
                 }
                 }
                 Err(_) => {
                     Ok::<_, Rejection>(WithTemplate {
                         name: "index",
-                        value: json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"}),
+                        value: json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 10,000"}),
                     })
                 }
             }
@@ -62,115 +75,108 @@ fn sleep() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Reject
 
 #[cfg(test)]
 mod test {
-    use super::sleep;
+    use super::hash;
     use serde_json::json;
     use std::time::{Duration, Instant};
-    
-    #[tokio::test]
-    async fn test_sleep_default() {
-        let filter = sleep();
-        let before = Instant::now();
-        let value = warp::test::request()
-            .path("/sleep")
-            .filter(&filter)
-            .await
-            .unwrap();
-        let after = before.elapsed();
-        assert_eq!(value.name, "index");
-        assert_eq!(
-            value.value,
-            json!({ "sleep-success-msg": "Successfully slept 1000 milliseconds" })
-        );
-        assert!(after >= Duration::from_millis(1000));
-    }
 
     #[tokio::test]
-    async fn test_sleep_custom_length() {
-        let filter = sleep();
-        let before = Instant::now();
+    async fn test_hash_default() {
+        let filter = hash();
         let value = warp::test::request()
-            .path("/sleep?length=3000")
-            .filter(&filter)
-            .await
-            .unwrap();
-        let after = before.elapsed();
-        assert_eq!(value.name, "index");
-        assert_eq!(
-            value.value,
-            json!({ "sleep-success-msg": "Successfully slept 3000 milliseconds" })
-        );
-        assert!(after >= Duration::from_millis(3000));
-    }
-
-    #[tokio::test]
-    async fn test_sleep_below_edge_case() {
-        let filter = sleep();
-        let before = Instant::now();
-        let value = warp::test::request()
-            .path("/sleep?length=9999")
-            .filter(&filter)
-            .await
-            .unwrap();
-        let after = before.elapsed();
-        assert_eq!(value.name, "index");
-        assert_eq!(
-            value.value,
-            json!({ "sleep-success-msg": "Successfully slept 9999 milliseconds" })
-        );
-        assert!(after >= Duration::from_millis(9999));
-    }
-
-    #[tokio::test]
-    async fn test_sleep_at_edge_case() {
-        let filter = sleep();
-        let before = Instant::now();
-        let value = warp::test::request()
-            .path("/sleep?length=10000")
-            .filter(&filter)
-            .await
-            .unwrap();
-        let after = before.elapsed();
-        assert_eq!(value.name, "index");
-        assert_eq!(
-            value.value,
-            json!({ "sleep-success-msg": "Successfully slept 10000 milliseconds" })
-        );
-        assert!(after >= Duration::from_millis(10000));
-    }
-
-    #[tokio::test]
-    async fn test_sleep_non_integer_length() {
-        let filter = sleep();
-        let value = warp::test::request()
-            .path("/sleep?length=string")
+            .path("/hash")
             .filter(&filter)
             .await
             .unwrap();
         assert_eq!(value.name, "index");
         assert_eq!(
             value.value,
-            json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"})
+            json!({ "hash-success-msg": "Successfully hashed 1000 times" })
         );
     }
 
     #[tokio::test]
-    async fn test_sleep_above_edge_case() {
-        let filter = sleep();
+    async fn test_hash_custom_amount() {
+        let filter = hash();
         let value = warp::test::request()
-            .path("/sleep?length=10001")
+            .path("/hash?amount=3000")
             .filter(&filter)
             .await
             .unwrap();
         assert_eq!(value.name, "index");
         assert_eq!(
             value.value,
-            json!({ "sleep-error-msg": "Length must be a positive integer between 0 and 10000"})
+            json!({ "hash-success-msg": "Successfully hashed 3000 times" })
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hash_below_edge_case() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=9999")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-success-msg": "Successfully hashed 9999 times" })
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hash_at_edge_case() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=10000")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-success-msg": "Successfully hashed 10000 times" })
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hash_non_integer_amount() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=string")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 10,000"})
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hash_above_edge_case() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=10001")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 10,000"})
         );
     }
 }
 
 #[tokio::main]
 async fn main() {
+    let binding = "127.0.0.1:9184".parse().unwrap();
+    let exporter = prometheus_exporter::start(binding).unwrap();
+    let guard = exporter.wait_request();
+    drop(guard);
+
     let config = redact_config::new("WEBSITE").unwrap();
 
     let mut hb = Handlebars::new();
@@ -202,7 +208,7 @@ async fn main() {
 
     let slack_webhook_url = config.get_str("slack.webhook").unwrap();
 
-    let sleep_route = sleep().map(handlebars.clone());
+    let hash_route = hash().map(handlebars.clone());
 
     let message_route = warp::path!("message")
         .and(warp::post())
@@ -256,7 +262,7 @@ async fn main() {
         .or(cloud_route)
         .or(css_routes)
         .or(message_route)
-        .or(sleep_route);
+        .or(hash_route);
 
     warp::serve(static_routes).run(([0, 0, 0, 0], 8080)).await;
 }
