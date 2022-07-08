@@ -3,8 +3,13 @@ use redact_config::Configurator;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::{collections::HashMap, sync::Arc, thread, time};
+use std::{collections::HashMap, sync::Arc, thread, time::{self, Duration}};
 use warp::{Filter, Rejection};
+use prometheus::Encoder;
+use prometheus_exporter::{
+    self,
+    prometheus::register_counter,
+};
 
 #[derive(Deserialize, Serialize)]
 struct MyObject {
@@ -171,6 +176,24 @@ mod test {
 
 #[tokio::main]
 async fn main() {
+    let binding = "127.0.0.1:9184".parse().unwrap();
+    // Will create an exporter and start the http server using the given binding.
+    // If the webserver can't bind to the given binding it will fail with an error.
+    prometheus_exporter::start(binding).unwrap();
+    // A default ProcessCollector is registered automatically.
+    // let mut buffer = Vec::new();
+    // let encoder = prometheus::TextEncoder::new();
+    // for _ in 0..5 {
+    //     let metric_families = prometheus::gather();
+    //     encoder.encode(&metric_families, &mut buffer).unwrap();
+
+    //     // Output to the standard output.
+    //     println!("{}", String::from_utf8(buffer.clone()).unwrap());
+
+    //     buffer.clear();
+    //     thread::sleep(Duration::from_secs(1));
+    // }
+    
     let config = redact_config::new("WEBSITE").unwrap();
 
     let mut hb = Handlebars::new();
