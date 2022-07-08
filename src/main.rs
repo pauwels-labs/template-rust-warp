@@ -41,7 +41,7 @@ fn hash() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Rejecti
                     if amount > 1000000 {
                         Ok::<_, Rejection>(WithTemplate {
                             name: "index",
-                            value: json!({ "hash-error-msg": "amount must be a positive integer between 0 and 1,000,000"}),
+                            value: json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 1,000,000"}),
                         })
                     } else {
                         let mut map: HashMap<u64, String> = HashMap::new();
@@ -66,7 +66,7 @@ fn hash() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Rejecti
                 Err(_) => {
                     Ok::<_, Rejection>(WithTemplate {
                         name: "index",
-                        value: json!({ "hash-error-msg": "amount must be a positive integer between 0 and 1,000,000"}),
+                        value: json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 1,000,000"}),
                     })
                 }
             }
@@ -82,19 +82,91 @@ mod test {
     #[tokio::test]
     async fn test_hash_default() {
         let filter = hash();
-        let before = Instant::now();
         let value = warp::test::request()
             .path("/hash")
             .filter(&filter)
             .await
             .unwrap();
-        let after = before.elapsed();
         assert_eq!(value.name, "index");
         assert_eq!(
             value.value,
-            json!({ "hash-success-msg": "Successfully slept 1000 milliseconds" })
+            json!({ "hash-success-msg": "Successfully hashed 1000 times" })
         );
-        assert!(after >= Duration::from_millis(1000));
+    }
+
+    #[tokio::test]
+    async fn test_hash_custom_amount() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=3000")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-success-msg": "Successfully hashed 3000 times" })
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hash_below_edge_case() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=999999")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-success-msg": "Successfully hashed 999999 times" })
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hash_at_edge_case() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=1000000")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-success-msg": "Successfully hashed 1000000 times" })
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hash_non_integer_amount() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=string")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 1,000,000"})
+        );
+    }
+
+    #[tokio::test]
+    async fn test_hash_above_edge_case() {
+        let filter = hash();
+        let value = warp::test::request()
+            .path("/hash?amount=1000001")
+            .filter(&filter)
+            .await
+            .unwrap();
+        assert_eq!(value.name, "index");
+        assert_eq!(
+            value.value,
+            json!({ "hash-error-msg": "Amount must be a positive integer between 0 and 1,000,000"})
+        );
     }
 }
 
