@@ -172,7 +172,7 @@ mod test {
 
 #[tokio::main]
 async fn main() {
-    let binding = "127.0.0.1:9184".parse().unwrap();
+    let binding = "0.0.0.0:9184".parse().unwrap();
     let exporter = prometheus_exporter::start(binding).unwrap();
     let guard = exporter.wait_request();
     drop(guard);
