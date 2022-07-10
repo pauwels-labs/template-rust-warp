@@ -158,3 +158,5 @@ extraVolumeMounts:
     mountPath: /usr/local/bin/config
 
 extraVolumes: []
+
+disablePrometheus: false
