@@ -61,6 +61,10 @@ service:
     targetPort: 8080
     protocol: TCP
     name: http
+  - port: 9184
+    targetPort: 9184
+    protocol: TCP
+    name: prometheus
   type: ClusterIP
 
 env: {}
