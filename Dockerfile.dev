@@ -10,6 +10,9 @@ RUN apk add --no-cache musl-dev
 WORKDIR /usr/src
 RUN USER=root cargo new service
 
+# Change cargo config to avoid long crates.io index updates
+RUN mkdir -p ~/.cargo && printf "[net]\ngit-fetch-with-cli = true\n" > ~/.cargo/config
+
 # Perform an initial compilation to cache dependencies
 WORKDIR /usr/src/service
 COPY Cargo.lock Cargo.toml ./
