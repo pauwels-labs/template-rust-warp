@@ -6,6 +6,9 @@ RUN adduser --disabled-password --no-create-home --uid 1000 service service
 # Perform apk actions as root
 RUN apk add --no-cache musl-dev
 
+# Change cargo config to avoid long crates.io index updates
+RUN mkdir -p ~/.cargo && printf "[net]\ngit-fetch-with-cli = true\n" > ~/.cargo/config
+
 # Create build directory as root
 WORKDIR /usr/src
 RUN USER=root cargo new service
