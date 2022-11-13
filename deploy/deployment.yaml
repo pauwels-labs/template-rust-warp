@@ -37,7 +37,7 @@ spec:
             memory: 256Mi
         envFrom:
         - secretRef:
-            name: homepage-env
+            name: env-homepage
         ports:
         - containerPort: 8080
           name: http
@@ -47,4 +47,4 @@ spec:
       volumes:
       - name: config
         secret:
-          secretName: homepage-config
+          secretName: config-homepage
