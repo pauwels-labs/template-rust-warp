@@ -6,3 +6,4 @@ resources:
 - externalsecret-env.yaml
 - secretstore-homepage.yaml
 - serviceaccount.yaml
+- service.yaml

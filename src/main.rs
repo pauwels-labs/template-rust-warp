@@ -172,10 +172,10 @@ mod test {
 
 #[tokio::main]
 async fn main() {
-    let binding = "0.0.0.0:9184".parse().unwrap();
-    let exporter = prometheus_exporter::start(binding).unwrap();
-    let guard = exporter.wait_request();
-    drop(guard);
+    // let binding = "0.0.0.0:9184".parse().unwrap();
+    // let exporter = prometheus_exporter::start(binding).unwrap();
+    // let guard = exporter.wait_request();
+    // drop(guard);
 
     let config = redact_config::new("WEBSITE").unwrap();
 
@@ -208,7 +208,7 @@ async fn main() {
 
     let slack_webhook_url = config.get_str("slack.webhook").unwrap();
 
-    let hash_route = hash().map(handlebars.clone());
+    // let hash_route = hash().map(handlebars.clone());
 
     let message_route = warp::path!("message")
         .and(warp::post())
@@ -261,8 +261,8 @@ async fn main() {
         .or(full_service_route)
         .or(cloud_route)
         .or(css_routes)
-        .or(message_route)
-        .or(hash_route);
+        .or(message_route);
+    //.or(hash_route);
 
     warp::serve(static_routes).run(([0, 0, 0, 0], 8080)).await;
 }
