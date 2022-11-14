@@ -1152,7 +1152,7 @@ dependencies = [
 [[package]]
 name = "redact-config"
 version = "1.0.1"
-source = "git+https://github.com/pauwels-labs/redact-config?rev=eb523d478583cd9c4a917567658f9aca22d23f84#eb523d478583cd9c4a917567658f9aca22d23f84"
+source = "git+https://github.com/pauwels-labs/redact-config?rev=1fe3e31170573a76e830b84a86e30bcfa7434f57#1fe3e31170573a76e830b84a86e30bcfa7434f57"
 dependencies = [
  "config",
  "serde",

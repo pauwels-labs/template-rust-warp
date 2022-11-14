@@ -6,7 +6,7 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha512};
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, path::Path, sync::Arc};
 use warp::{Filter, Rejection};
 
 #[derive(Deserialize, Serialize)]
@@ -177,7 +177,12 @@ async fn main() {
     // let guard = exporter.wait_request();
     // drop(guard);
 
-    let config = redact_config::new("WEBSITE").unwrap();
+    let config_path = if Path::new("/etc/homepage/config").is_dir() {
+        "/etc/homepage/config".to_owned()
+    } else {
+        "./config".to_owned()
+    };
+    let config = redact_config::new(&config_path, "WEBSITE").unwrap();
 
     let mut hb = Handlebars::new();
     hb.register_template_file("index", "./static/index.html")

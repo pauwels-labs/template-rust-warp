@@ -7,7 +7,7 @@ edition = "2021"
 [dependencies]
 tokio = { version = "0.2", features = ["macros"] }
 warp = "0.2"
-redact-config = { git = "https://github.com/pauwels-labs/redact-config", rev = "eb523d478583cd9c4a917567658f9aca22d23f84" }
+redact-config = { git = "https://github.com/pauwels-labs/redact-config", rev = "1fe3e31170573a76e830b84a86e30bcfa7434f57" }
 reqwest = { version = "0.10.8", default-features = false, features = ["json", "rustls-tls"] }
 handlebars = "3.5.1"
 serde = { version = "1.0", features = ["derive"] }
