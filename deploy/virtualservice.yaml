@@ -23,7 +23,7 @@ spec:
     match:
     - headers:
         referer:
-          regex: ".*/t/pauwels-labs-main/homepage$"
+          regex: "^.*/t/pauwels-labs-main/homepage.*$"
     rewrite:
       uri: "/"
     route:
