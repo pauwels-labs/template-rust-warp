@@ -11,7 +11,7 @@ spec:
   - name: homepage
     match:
     - uri:
-        prefix: "/t/pauwels-labs-main/homepage"
+        prefix: "/t/pauwels-labs-main/homepage/"
     rewrite:
       uri: "/"
     route:
@@ -19,15 +19,9 @@ spec:
         port:
           number: 8080
         host: homepage
-  - name: homepage-referer
+  - name: homepage-trailing-slash-redirect
     match:
-    - headers:
-        referer:
-          regex: "^.*/t/pauwels-labs-main/homepage.*$"
-    rewrite:
-      uri: "/"
-    route:
-    - destination:
-        port:
-          number: 8080
-        host: homepage
+    - uri:
+        prefix: "/t/pauwels-labs-main/homepage"
+    redirect:
+      uri: "/t/pauwels-labs-main/homepage/"
