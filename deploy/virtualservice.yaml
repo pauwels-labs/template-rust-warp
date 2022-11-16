@@ -9,6 +9,9 @@ spec:
   - istio-ingress/pauwels-labs
   http:
   - name: homepage
+    match:
+    - uri:
+        prefix:  "/t/pauwels-labs-main/homepage"
     route:
     - destination:
         port:
