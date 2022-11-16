@@ -12,6 +12,20 @@ spec:
     match:
     - uri:
         prefix: "/t/pauwels-labs-main/homepage"
+    rewrite:
+      uri: "/"
+    route:
+    - destination:
+        port:
+          number: 8080
+        host: homepage
+  - name: homepage-referer
+    match:
+    - headers:
+        referer:
+          regex: ".*/t/pauwels-labs-main/homepage$"
+    rewrite:
+      uri: "/"
     route:
     - destination:
         port:
