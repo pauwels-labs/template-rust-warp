@@ -11,7 +11,7 @@ spec:
   - name: homepage
     match:
     - uri:
-        prefix:  "/t/pauwels-labs-main/homepage"
+        prefix: "/t/pauwels-labs-main/homepage"
     route:
     - destination:
         port:
