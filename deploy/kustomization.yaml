@@ -7,3 +7,4 @@ resources:
 - secretstore-homepage.yaml
 - serviceaccount.yaml
 - service.yaml
+- virtualservice.yaml

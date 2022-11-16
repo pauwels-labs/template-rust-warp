@@ -6,7 +6,7 @@ use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha512};
-use std::{collections::HashMap, path::Path, sync::Arc};
+use std::{collections::HashMap, net::IpAddr, path::Path, str::FromStr, sync::Arc};
 use warp::{Filter, Rejection};
 
 #[derive(Deserialize, Serialize)]
@@ -269,5 +269,7 @@ async fn main() {
         .or(message_route);
     //.or(hash_route);
 
-    warp::serve(static_routes).run(([0, 0, 0, 0], 8080)).await;
+    println!("Starting server listening [::0]:8080");
+    let addr = IpAddr::from_str("::0").unwrap();
+    warp::serve(static_routes).run((addr, 8080)).await;
 }
