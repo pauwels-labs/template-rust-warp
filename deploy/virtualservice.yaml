@@ -6,6 +6,7 @@ spec:
   hosts:
   - dev.pauwelslabs.com
   gateways:
+  - mesh
   - istio-ingress/pauwels-labs
   http:
   - name: homepage
@@ -22,6 +23,6 @@ spec:
   - name: homepage-trailing-slash-redirect
     match:
     - uri:
-        prefix: "/t/pauwels-labs-main/homepage"
+        exact: "/t/pauwels-labs-main/homepage"
     redirect:
       uri: "/t/pauwels-labs-main/homepage/"
