@@ -7,7 +7,7 @@ spec:
   - dev.pauwelslabs.com
   gateways:
   - mesh
-  - istio-ingress/pauwels-labs
+  - i-istio-ingress/pauwels-labs
   http:
   - name: homepage
     match:
