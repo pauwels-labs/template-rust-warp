@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/index.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+  </head>
+  <body>
+    <div id="content-wrapper">
+      <h1><span id="header"><span class="neg-highlight">This is Pauwels Labs</span></span></h1>
+      {{#if hash-success-msg}}
+	    <span class="success">{{ hash-success-msg }}</span>
+	    {{/if}}
+      {{#if hash-error-msg}}
+	    <span class="error">{{ hash-error-msg }}</span>
+	    {{/if}}
+      <p>
+        My name is Alexandre Pauwels. I like to build software that
+        tries to solve problems in the ways that machines and humans
+        interact. In pursuing that endeavour, I have over the past two
+        years narrowed in on two primary areas of interest.
+      </p>
+      <p>
+        <a href="/redact">Redact</a>
+        
+      </p>
+      <!-- <p> -->
+      <!--   I build -->
+      <!--   <a href="/expandable">expandable</a>, -->
+      <!--   <a href="/scalable">scalable</a>, and -->
+      <!--   <a href="/highly-available">highly-available</a> software. -->
+      <!-- </p> -->
+      <!-- <p> -->
+      <!--   My development services are -->
+      <!--   <a href="/full-stack">full-stack</a>, -->
+      <!--   <a href="/full-service">full-service</a>, -->
+      <!--   and technology agnostic, I select the best tools for the job. -->
+      <!--   I can deploy to any -->
+      <!--   <a href="/cloud">single-cloud, multi-cloud, or on-prem</a> -->
+      <!--   location depending on project requirements. -->
+      <!-- </p> -->
+      <!-- <p> -->
+      <!--   I am efficient, I avoid reinventing -->
+      <!--   the wheel, and, like my software, am -->
+      <!--   <span class="bold">available 24/7</span>. -->
+      <!-- </p> -->
+      <form action="/message" method="post" id="send-message">
+        <label for="message">
+	  <span class="bold">Contact me</span>
+	  {{#if error-msg}}
+	  <span class="error">{{ error-msg }}</span>
+	  {{/if}}
+	  {{#if success-msg}}
+	  <span class="success">{{ success-msg }}</span>
+	  {{/if}}
+	</label>
+        <textarea id="message" name="message" autofocus="true">{{ msg }}</textarea>
+        <button>send</button>
+      </form>
+    </div>
+  </body>
+</html>

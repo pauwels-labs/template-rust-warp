@@ -1,20 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: homepage
-  labels:
-    app: homepage
+  name: "homepage"
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: homepage
   template:
-    metadata:
-      labels:
-        app: homepage
     spec:
-      serviceAccountName: homepage
+      serviceAccountName: "${envname}-homepage"
       securityContext:
         fsGroup: 2000
       containers:
@@ -37,7 +29,7 @@ spec:
             memory: 256Mi
         envFrom:
         - secretRef:
-            name: env-homepage
+            name: "${envname}-env-homepage"
         ports:
         - containerPort: 8080
           name: http
