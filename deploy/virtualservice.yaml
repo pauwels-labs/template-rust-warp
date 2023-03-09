@@ -4,7 +4,7 @@ metadata:
   name: homepage
 spec:
   hosts:
-  - "${envname}.pauwelslabs.com"
+  - dev.pauwelslabs.com
   gateways:
   - mesh
   - i-istio-ingress/pauwels-labs
