@@ -9,7 +9,7 @@ spec:
   - mesh
   - i-istio-ingress/pauwels-labs
   http:
-  - name: homepage
+  - name: main
     match:
     - uri:
         prefix: "/t/pauwels-labs-main/homepage/"
@@ -20,7 +20,7 @@ spec:
         port:
           number: 8080
         host: homepage
-  - name: homepage-trailing-slash-redirect
+  - name: trailing-slash-redirect
     match:
     - uri:
         exact: "/t/pauwels-labs-main/homepage"
