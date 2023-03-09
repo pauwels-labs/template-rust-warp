@@ -10,7 +10,7 @@ spec:
       securityContext:
         fsGroup: 2000
       containers:
-      - name: homepage
+      - name: main
         securityContext:
           capabilities:
             drop:
