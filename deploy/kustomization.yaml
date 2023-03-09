@@ -54,7 +54,6 @@ replacements:
     fieldPaths:
     - spec.secretStoreRef.name
 - source:
-    group: core
     version: v1
     kind: ServiceAccount
     fieldPath: metadata.name
