@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "${envname}-homepage"
+  name: "homepage"
 spec:
   replicas: 1
   template:
