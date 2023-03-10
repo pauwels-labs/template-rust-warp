@@ -36,12 +36,17 @@ replacements:
       kind: VirtualService
     fieldPaths:
     - spec.http.[name=main].match.0.uri.prefix
-    - spec.http.[name=main].route.0.destination.host
     - spec.http.[name=trailing-slash-redirect].match.0.uri.exact
     - spec.http.[name=trailing-slash-redirect].redirect.uri
     options:
       delimiter: "/"
       index: 3
+  - select:
+      group: networking.istio.io
+      version: v1beta1
+      kind: VirtualService
+    fieldPaths:
+    - spec.http.[name=main].route.0.destination.host
   - select:
       group: apps
       version: v1
