@@ -4,7 +4,7 @@ metadata:
   name: homepage
 spec:
   hosts:
-  - "${subdomainoverride:=${environment}}.pauwelslabs.com"
+  - "${environmentoverride:=${environment}}.pauwelslabs.com"
   gateways:
   - mesh
   - i-istio-ingress/pauwels-labs
