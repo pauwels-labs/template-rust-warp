@@ -36,6 +36,7 @@ replacements:
       kind: VirtualService
     fieldPaths:
     - spec.http.[name=main].match.0.uri.prefix
+    - spec.http.[name=main].route.0.destination.host
     - spec.http.[name=trailing-slash-redirect].match.0.uri.exact
     - spec.http.[name=trailing-slash-redirect].redirect.uri
     options:
