@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+nameSuffix: "-staging${namesuffix}"
+commonLabels:
+  app: "homepage-staging${namesuffix}"
+  env: "staging"
+resources:
+- ../base
