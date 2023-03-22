@@ -6,3 +6,28 @@ commonLabels:
   env: "staging"
 resources:
 - ../base
+patches:
+- patch: |-
+    - op: add
+      path: /spec/data
+      value:
+        secretKey: "staging.yaml"
+        remoteRef:
+          key: "tenants/t-pauwels-labs-main/configs/staging/homepage${namesuffix}/config"
+          property: config.yaml
+  target:
+    group: external-secrets.io
+    version: v1beta1
+    kind: ExternalSecret
+    name: "config-homepage-staging${namesuffix}"
+- patch: |-
+    - op: add
+      path: /spec/dataFrom
+      value:
+        extract:
+          key: "tenants/t-pauwels-labs-main/configs/staging/homepage${namesuffix}/env"
+  target:
+    group: external-secrets.io
+    version: v1beta1
+    kind: ExternalSecret
+    name: "env-homepage-staging${namesuffix}"

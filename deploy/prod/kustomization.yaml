@@ -12,3 +12,28 @@ patch:
     group: networking.istio.io
     version: v1beta1
     kind: VirtualService
+patches:
+- patch: |-
+    - op: add
+      path: /spec/data
+      value:
+        secretKey: "prod.yaml"
+        remoteRef:
+          key: "tenants/t-pauwels-labs-main/configs/prod/homepage${namesuffix}/config"
+          property: config.yaml
+  target:
+    group: external-secrets.io
+    version: v1beta1
+    kind: ExternalSecret
+    name: "config-homepage-prod${namesuffix}"
+- patch: |-
+    - op: add
+      path: /spec/dataFrom
+      value:
+        extract:
+          key: "tenants/t-pauwels-labs-main/configs/prod/homepage${namesuffix}/env"
+  target:
+    group: external-secrets.io
+    version: v1beta1
+    kind: ExternalSecret
+    name: "env-homepage-prod${namesuffix}"

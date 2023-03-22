@@ -6,3 +6,28 @@ commonLabels:
   env: "dev"
 resources:
 - ../base
+patches:
+- patch: |-
+    - op: add
+      path: /spec/data
+      value:
+        secretKey: "dev.yaml"
+        remoteRef:
+          key: "tenants/t-pauwels-labs-main/configs/dev/homepage${namesuffix}/config"
+          property: config.yaml
+  target:
+    group: external-secrets.io
+    version: v1beta1
+    kind: ExternalSecret
+    name: "config-homepage-dev${namesuffix}"
+- patch: |-
+    - op: add
+      path: /spec/dataFrom
+      value:
+        extract:
+          key: "tenants/t-pauwels-labs-main/configs/dev/homepage${namesuffix}/env"
+  target:
+    group: external-secrets.io
+    version: v1beta1
+    kind: ExternalSecret
+    name: "env-homepage-dev${namesuffix}"
