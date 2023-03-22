@@ -5,6 +5,9 @@ metadata:
 spec:
   hosts:
   - "pauwelslabs.com"
+  gateways:
+  - mesh
+  - i-istio-ingress/pauwels-labs
   http:
   - name: root
     route:
