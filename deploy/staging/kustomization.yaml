@@ -13,24 +13,24 @@ patches:
       value:
         secretKey: "staging.yaml"
         remoteRef:
-          key: "tenants/t-pauwels-labs-main/configs/staging/homepage${namesuffix}/config"
+          key: "tenants/t-pauwels-labs-main/configs/staging/homepage-staging${namesuffix}/config"
           property: config.yaml
   target:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "config-homepage-staging${namesuffix}"
+    name: "config-homepage-staging*"
 - patch: |-
     - op: add
       path: /spec/dataFrom
       value:
         extract:
-          key: "tenants/t-pauwels-labs-main/configs/staging/homepage${namesuffix}/env"
+          key: "tenants/t-pauwels-labs-main/configs/staging/homepage-staging${namesuffix}/env"
   target:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "env-homepage-staging${namesuffix}"
+    name: "env-homepage-staging*"
 replacements:
 - source:
     group: apps

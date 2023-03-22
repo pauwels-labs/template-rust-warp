@@ -19,24 +19,24 @@ patches:
       value:
         secretKey: "prod.yaml"
         remoteRef:
-          key: "tenants/t-pauwels-labs-main/configs/prod/homepage${namesuffix}/config"
+          key: "tenants/t-pauwels-labs-main/configs/prod/homepage-prod${namesuffix}/config"
           property: config.yaml
   target:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "config-homepage-prod${namesuffix}"
+    name: "config-homepage-prod"
 - patch: |-
     - op: add
       path: /spec/dataFrom
       value:
         extract:
-          key: "tenants/t-pauwels-labs-main/configs/prod/homepage${namesuffix}/env"
+          key: "tenants/t-pauwels-labs-main/configs/prod/homepage-prod${namesuffix}/env"
   target:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "env-homepage-prod${namesuffix}"
+    name: "env-homepage-prod"
 replacements:
 - source:
     group: apps
