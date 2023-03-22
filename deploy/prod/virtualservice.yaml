@@ -5,22 +5,3 @@ metadata:
 spec:
   hosts:
   - "prod.pauwelslabs.com"
-  - "pauwelslabs.com"
-  http:
-  - name: main
-    match:
-    - uri:
-        prefix: "/t/pauwels-labs-main/homepage/"
-    rewrite:
-      uri: "/"
-    route:
-    - destination:
-        port:
-          number: 8080
-        host: homepage
-  - name: trailing-slash-redirect
-    match:
-    - uri:
-        exact: "/t/pauwels-labs-main/homepage"
-    redirect:
-      uri: "/t/pauwels-labs-main/homepage/"
