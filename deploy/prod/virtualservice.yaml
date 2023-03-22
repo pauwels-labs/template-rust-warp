@@ -25,7 +25,7 @@ spec:
       uri: "/t/pauwels-labs-main/homepage/"
   - name: root
     route:
-    - destintion:
+    - destination:
         port:
           number: 8080
         host: homepage${namesuffix}
