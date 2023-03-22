@@ -5,6 +5,7 @@ metadata:
 spec:
   hosts:
   - "prod.pauwelslabs.com"
+  - "pauwelslabs.com"
   http:
   - name: main
     match:
