@@ -32,4 +32,4 @@ spec:
     - destination:
         port:
           number: 8080
-        host: homepage
+        host: "homepage${namesuffix}"
