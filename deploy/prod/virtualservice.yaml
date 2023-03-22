@@ -5,7 +5,6 @@ metadata:
 spec:
   hosts:
   - "prod.pauwelslabs.com"
-  - "pauwelslabs.com"
   http:
   - name: main
     match:
@@ -24,12 +23,3 @@ spec:
         exact: "/t/pauwels-labs-main/homepage"
     redirect:
       uri: "/t/pauwels-labs-main/homepage/"
-  - name: root
-    match:
-    - uri:
-        exact: "/"
-    route:
-    - destination:
-        port:
-          number: 8080
-        host: "homepage${namesuffix}"

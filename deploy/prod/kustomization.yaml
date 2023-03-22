@@ -5,6 +5,7 @@ commonLabels:
   env: "prod"
 resources:
 - ../base
+- virtualservice-root.yaml
 patches:
 - path: virtualservice.yaml
 - patch: |-

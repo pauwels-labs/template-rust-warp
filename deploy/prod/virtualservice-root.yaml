@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: homepage-root
+spec:
+  hosts:
+  - "pauwelslabs.com"
+  http:
+  - name: root
+    route:
+    - destination:
+        port:
+          number: 8080
+        host: "homepage${namesuffix}"
