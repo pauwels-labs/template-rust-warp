@@ -31,3 +31,88 @@ patches:
     version: v1beta1
     kind: ExternalSecret
     name: "env-homepage-dev${namesuffix}"
+replacements:
+- source:
+    group: apps
+    version: v1
+    kind: Deployment
+    fieldPath: metadata.name
+  targets:
+  - select:
+      group: external-secrets.io
+      version: v1beta1
+      kind: ExternalSecret
+    fieldPaths:
+    - spec.target.name
+    options:
+      delimiter: "-"
+      index: 1
+  - select:
+      group: external-secrets.io
+      version: v1beta1
+      kind: ExternalSecret
+    fieldPaths:
+    - "spec.data.*.remoteRef.key"
+    options:
+      delimiter: "/"
+      index: 4
+  - select:
+      group: networking.istio.io
+      version: v1beta1
+      kind: VirtualService
+    fieldPaths:
+    - spec.http.[name=main].match.0.uri.prefix
+    - spec.http.[name=trailing-slash-redirect].match.0.uri.exact
+    - spec.http.[name=trailing-slash-redirect].redirect.uri
+    options:
+      delimiter: "/"
+      index: 3
+  - select:
+      group: networking.istio.io
+      version: v1beta1
+      kind: VirtualService
+    fieldPaths:
+    - spec.http.[name=main].route.0.destination.host
+  - select:
+      group: apps
+      version: v1
+      kind: Deployment
+    fieldPaths:
+    - spec.template.spec.containers.[name=main].envFrom.0.secretRef.name
+    - spec.template.spec.volumes.[name=config].secret.secretName
+    options:
+      delimiter: "-"
+      index: 1
+- source:
+    group: external-secrets.io
+    version: v1beta1
+    kind: SecretStore
+    fieldPath: metadata.name
+  targets:
+  - select:
+      group: external-secrets.io
+      version: v1beta1
+      kind: ExternalSecret
+    fieldPaths:
+    - spec.secretStoreRef.name
+- source:
+    version: v1
+    kind: ServiceAccount
+    fieldPath: metadata.name
+  targets:
+  - select:
+      group: apps
+      version: v1
+      kind: Deployment
+    fieldPaths:
+    - spec.template.spec.serviceAccountName
+    options:
+      create: true
+  - select:
+      group: external-secrets.io
+      version: v1beta1
+      kind: SecretStore
+    fieldPaths:
+    - spec.provider.vault.auth.kubernetes.serviceAccountRef.name
+    options:
+      create: true
