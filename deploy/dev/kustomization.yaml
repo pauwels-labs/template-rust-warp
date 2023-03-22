@@ -19,7 +19,7 @@ patches:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "config-homepage-dev"
+    name: "config-homepage-dev.*"
 - patch: |-
     - op: add
       path: /spec/dataFrom
@@ -30,7 +30,7 @@ patches:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "env-homepage-dev"
+    name: "env-homepage-dev.*"
 replacements:
 - source:
     group: apps

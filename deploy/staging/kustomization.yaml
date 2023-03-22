@@ -19,7 +19,7 @@ patches:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "config-homepage-staging*"
+    name: "config-homepage-staging.*"
 - patch: |-
     - op: add
       path: /spec/dataFrom
@@ -30,7 +30,7 @@ patches:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "env-homepage-staging*"
+    name: "env-homepage-staging.*"
 replacements:
 - source:
     group: apps
