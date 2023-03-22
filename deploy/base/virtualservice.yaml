@@ -3,8 +3,7 @@ kind: VirtualService
 metadata:
   name: homepage
 spec:
-  hosts:
-  - "${environmentoverride:=${environment}}.pauwelslabs.com"
+  hosts: []
   gateways:
   - mesh
   - i-istio-ingress/pauwels-labs

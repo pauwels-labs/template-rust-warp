@@ -1,36 +1,45 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-nameSuffix: "-staging${namesuffix}"
 commonLabels:
-  app: "homepage-staging${namesuffix}"
+  app: "homepage${namesuffix}"
   env: "staging"
 resources:
 - ../base
 patches:
+- path: virtualservice.yaml
+- patch: |-
+    - op: replace
+      path: /spec/provider/vault/auth/kubernetes/role
+      value: tenant-configs-staging-reader
+  target:
+    group: external-secrets.io
+    version: v1beta1
+    kind: SecretStore
+    name: config-homepage.*
 - patch: |-
     - op: add
-      path: /spec/data
+      path: /spec/data/-
       value:
         secretKey: "staging.yaml"
         remoteRef:
-          key: "tenants/t-pauwels-labs-main/configs/staging/homepage-staging${namesuffix}/config"
+          key: "tenants/t-pauwels-labs-main/configs/staging/homepage${namesuffix}/config"
           property: config.yaml
   target:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "config-homepage-staging.*"
+    labelSelector: "secretType=config"
 - patch: |-
     - op: add
-      path: /spec/dataFrom
+      path: /spec/dataFrom/-
       value:
         extract:
-          key: "tenants/t-pauwels-labs-main/configs/staging/homepage-staging${namesuffix}/env"
+          key: "tenants/t-pauwels-labs-main/configs/staging/homepage${namesuffix}/env"
   target:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "env-homepage-staging.*"
+    labelSelector: "secretType=env"
 replacements:
 - source:
     group: apps

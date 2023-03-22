@@ -1,42 +1,45 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-nameSuffix: "-prod${namesuffix}"
 commonLabels:
-  app: "homepage-prod${namesuffix}"
+  app: "homepage${namesuffix}"
   env: "prod"
 resources:
 - ../base
-patch:
-- path: virtualservice.yaml
-  target:
-    group: networking.istio.io
-    version: v1beta1
-    kind: VirtualService
 patches:
+- path: virtualservice.yaml
+- patch: |-
+    - op: replace
+      path: /spec/provider/vault/auth/kubernetes/role
+      value: tenant-configs-prod-reader
+  target:
+    group: external-secrets.io
+    version: v1beta1
+    kind: SecretStore
+    name: config-homepage.*
 - patch: |-
     - op: add
-      path: /spec/data
+      path: /spec/data/-
       value:
         secretKey: "prod.yaml"
         remoteRef:
-          key: "tenants/t-pauwels-labs-main/configs/prod/homepage-prod${namesuffix}/config"
+          key: "tenants/t-pauwels-labs-main/configs/prod/homepage${namesuffix}/config"
           property: config.yaml
   target:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "config-homepage-prod.*"
+    labelSelector: "secretType=config"
 - patch: |-
     - op: add
-      path: /spec/dataFrom
+      path: /spec/dataFrom/-
       value:
         extract:
-          key: "tenants/t-pauwels-labs-main/configs/prod/homepage-prod${namesuffix}/env"
+          key: "tenants/t-pauwels-labs-main/configs/prod/homepage${namesuffix}/env"
   target:
     group: external-secrets.io
     version: v1beta1
     kind: ExternalSecret
-    name: "env-homepage-prod.*"
+    labelSelector: "secretType=env"
 replacements:
 - source:
     group: apps

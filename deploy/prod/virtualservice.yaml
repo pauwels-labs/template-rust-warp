@@ -4,11 +4,8 @@ metadata:
   name: homepage
 spec:
   hosts:
-  - "${environmentoverride:=${environment}}.pauwelslabs.com"
+  - "prod.pauwelslabs.com"
   - "pauwelslabs.com"
-  gateways:
-  - mesh
-  - i-istio-ingress/pauwels-labs
   http:
   - name: main
     match:
