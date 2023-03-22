@@ -83,6 +83,7 @@ replacements:
       kind: VirtualService
     fieldPaths:
     - spec.http.[name=main].route.0.destination.host
+    - spec.http.[name=main].route.2.destination.host
   - select:
       group: apps
       version: v1
