@@ -59,6 +59,7 @@ replacements:
       kind: ExternalSecret
     fieldPaths:
     - "spec.data.*.remoteRef.key"
+    - "spec.dataFrom.*.extract.key"
     options:
       delimiter: "/"
       index: 4
