@@ -5,14 +5,14 @@ authors = ["ajp <8890201+ajpauwels@users.noreply.github.com>"]
 edition = "2021"
 
 [dependencies]
-tokio = { version = "0.2", features = ["macros"] }
-warp = "0.2"
-redact-config = { git = "https://github.com/pauwels-labs/redact-config", rev = "1fe3e31170573a76e830b84a86e30bcfa7434f57" }
-reqwest = { version = "0.10.8", default-features = false, features = ["json", "rustls-tls"] }
-handlebars = "3.5.1"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-prometheus = { version = "0.13.1", features = ["process"] }
-prometheus_exporter = "0.8.4"
+tokio = { version = "1.27.0", features = ["macros", "rt-multi-thread"] }
+warp = "0.3.4"
+redact-config = { git = "https://github.com/pauwels-labs/redact-config", rev = "2d1c3059bc37689ab432a4422765438f4d9a3125" }
+reqwest = { version = "0.11.16", default-features = false, features = ["json", "rustls-tls"] }
+handlebars = "4.3.6"
+serde = { version = "1.0.159", features = ["derive"] }
+serde_json = "1.0.95"
+prometheus = { version = "0.13.3", features = ["process"] }
+prometheus_exporter = "0.8.5"
 rand = "0.8.5"
-sha2 = "0.10.2"
+sha2 = "0.10.6"
