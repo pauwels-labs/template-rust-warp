@@ -6,7 +6,7 @@ spec:
   hosts: []
   gateways:
   - mesh
-  - i-istio-ingress/pauwels-labs
+  - i-istio-ingress/pauwelslabs-com
   http:
   - name: main
     match:
