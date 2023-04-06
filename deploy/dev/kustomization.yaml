@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 commonLabels:
-  app: "homepage${namesuffix}"
+  app: "${name}${namesuffix}"
   env: "dev"
 resources:
 - ../base
@@ -15,14 +15,14 @@ patches:
     group: external-secrets.io
     version: v1beta1
     kind: SecretStore
-    name: config-homepage.*
+    name: config-.*
 - patch: |-
     - op: add
       path: /spec/data/-
       value:
         secretKey: "dev.yaml"
         remoteRef:
-          key: "tenants/t-pauwels-labs-main/configs/dev/homepage${namesuffix}/config"
+          key: "tenants/t-${tenantname}/configs/dev/${name}${namesuffix}/config"
           property: config.yaml
   target:
     group: external-secrets.io
@@ -34,7 +34,7 @@ patches:
       path: /spec/dataFrom/-
       value:
         extract:
-          key: "tenants/t-pauwels-labs-main/configs/dev/homepage${namesuffix}/env"
+          key: "tenants/t-${tenantname}/configs/dev/${name}${namesuffix}/env"
   target:
     group: external-secrets.io
     version: v1beta1

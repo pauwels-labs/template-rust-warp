@@ -1,27 +1,27 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: homepage
+  name: "${name}"
 spec:
   hosts: []
   gateways:
-  - mesh
-  - i-istio-ingress/pauwelslabs-com
+  - "mesh"
+  - "i-istio-ingress/${domain/./-}"
   http:
   - name: main
     match:
     - uri:
-        prefix: "/t/pauwels-labs-main/homepage/"
+        prefix: "/t/${tenantname}/${name}/"
     rewrite:
       uri: "/"
     route:
     - destination:
         port:
           number: 8080
-        host: homepage
+        host: "${name}"
   - name: trailing-slash-redirect
     match:
     - uri:
-        exact: "/t/pauwels-labs-main/homepage"
+        exact: "/t/${tenantname}/${name}"
     redirect:
-      uri: "/t/pauwels-labs-main/homepage/"
+      uri: "/t/${tenantname}/${name}/"

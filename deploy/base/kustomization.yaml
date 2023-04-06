@@ -7,7 +7,7 @@ resources:
 - deployment.yaml
 - externalsecret-config.yaml
 - externalsecret-env.yaml
-- secretstore-homepage.yaml
+- secretstore.yaml
 - serviceaccount.yaml
 - service.yaml
 - virtualservice.yaml

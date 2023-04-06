@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: homepage
+  name: "${name}"
 spec:
   replicas: 1
   template:
     spec:
-      serviceAccountName: "homepage"
+      serviceAccountName: "${name}"
       securityContext:
         fsGroup: 2000
       containers:
@@ -18,7 +18,7 @@ spec:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: 1000
-        image: "274295908850.dkr.ecr.eu-west-1.amazonaws.com/t/pauwels-labs-main/github/pauwels-labs/homepage:v0.4.2"
+        image: "274295908850.dkr.ecr.eu-west-1.amazonaws.com/t/${tenantname}/github/pauwels-labs/${name}:${version}"
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -29,14 +29,14 @@ spec:
             memory: 256Mi
         envFrom:
         - secretRef:
-            name: env-homepage
+            name: "env-${name}"
         ports:
         - containerPort: 8080
           name: http
         volumeMounts:
         - name: config
-          mountPath: /etc/homepage/config
+          mountPath: "/etc/${name}/config"
       volumes:
       - name: config
         secret:
-          secretName: config-homepage
+          secretName: "config-${name}"
