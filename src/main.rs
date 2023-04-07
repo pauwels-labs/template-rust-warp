@@ -236,7 +236,7 @@ async fn main() {
                 }
 
                 let mut slack_body_map = HashMap::new();
-                slack_body_map.insert("text", format!(r#"<!channel> {}"#, msg));
+                slack_body_map.insert("text", format!(r#"<!channel> {}"#, format!("homepage: {}", msg)));
 
                 Client::new()
                     .post(&slack_webhook_url)
