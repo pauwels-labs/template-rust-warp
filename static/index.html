@@ -22,35 +22,42 @@
 	    <span class="error">{{ hash-error-msg }}</span>
 	    {{/if}}
       <p>
-        I build
-        <a href="/expandable">expandable</a>,
-        <a href="/scalable">scalable</a>, and
-        <a href="/highly-available">highly-available</a> software.
+        This page is currently under construction, check back soon!
       </p>
       <p>
-        My development services are
-        <a href="/full-stack">full-stack</a>,
-        <a href="/full-service">full-service</a>,
-        and technology agnostic, I select the best tools for the job.
-        I can deploy to any
-        <a href="/cloud">single-cloud, multi-cloud, or on-prem</a>
-        location depending on project requirements.
+        If you have any inquiries, you can contact me below. Make sure
+        to include an e-mail or phone number in your message.
       </p>
-      <p>
-        I am efficient, I avoid reinventing
-        the wheel, and, like my software, am
-        <span class="bold">available 24/7</span>.
-      </p>
+      <!-- <p> -->
+      <!--   I build -->
+      <!--   <a href="/expandable">expandable</a>, -->
+      <!--   <a href="/scalable">scalable</a>, and -->
+      <!--   <a href="/highly-available">highly-available</a> software. -->
+      <!-- </p> -->
+      <!-- <p> -->
+      <!--   My development services are -->
+      <!--   <a href="/full-stack">full-stack</a>, -->
+      <!--   <a href="/full-service">full-service</a>, -->
+      <!--   and technology agnostic, I select the best tools for the job. -->
+      <!--   I can deploy to any -->
+      <!--   <a href="/cloud">single-cloud, multi-cloud, or on-prem</a> -->
+      <!--   location depending on project requirements. -->
+      <!-- </p> -->
+      <!-- <p> -->
+      <!--   I am efficient, I avoid reinventing -->
+      <!--   the wheel, and, like my software, am -->
+      <!--   <span class="bold">available 24/7</span>. -->
+      <!-- </p> -->
       <form action="/message" method="post" id="send-message">
         <label for="message">
-	  <span class="bold">Contact me</span>
-	  {{#if error-msg}}
-	  <span class="error">{{ error-msg }}</span>
-	  {{/if}}
-	  {{#if success-msg}}
-	  <span class="success">{{ success-msg }}</span>
-	  {{/if}}
-	</label>
+        <span class="bold">Contact me</span>
+        {{#if error-msg}}
+        <span class="error">{{ error-msg }}</span>
+        {{/if}}
+        {{#if success-msg}}
+        <span class="success">{{ success-msg }}</span>
+        {{/if}}
+	    </label>
         <textarea id="message" name="message" autofocus="true">{{ msg }}</textarea>
         <button>send</button>
       </form>
