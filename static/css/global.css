@@ -61,12 +61,12 @@ span.highlight {
 /* Left-align lists with the text above and below it */
 ol, ul {
     padding-left: 0px;
-    margin: 60px 0px 60px 0px;
 }
 
 li {
-    list-style-position: inside;
-    margin-bottom: 20px;
+    list-style-position: outside;
+    margin-left: 1em;
+    margin-bottom: 0px;
 }
 
 /* Expand textareas to fill parent div width */
@@ -83,7 +83,7 @@ form {
 textarea {
     resize: none;
     box-sizing: border-box;
-    min-height: 180px;
+    min-height: 300px;
     height: 100%;
     border-top: 1px solid black;
     border-left: 1px solid black;

@@ -22,32 +22,48 @@
 	    <span class="error">{{ hash-error-msg }}</span>
 	    {{/if}}
       <p>
-        This page is currently under construction, check back soon!
+        If your software company is undergoing rapid growth and your
+        SaaS infrastructure provider bills are rapidly scaling with
+        it, our products will drastically flatten that curve for you
+        by up to 90%.
       </p>
       <p>
-        If you have any inquiries, you can contact me below. Make sure
-        to include an e-mail or phone number in your message.
+        Our automated infrastructure solution allows software
+        companies to replace their SaaS vendors in order to save
+        money, increase uptime, and remove dependencies on external
+        parties, including us.
       </p>
-      <!-- <p> -->
-      <!--   I build -->
-      <!--   <a href="/expandable">expandable</a>, -->
-      <!--   <a href="/scalable">scalable</a>, and -->
-      <!--   <a href="/highly-available">highly-available</a> software. -->
-      <!-- </p> -->
-      <!-- <p> -->
-      <!--   My development services are -->
-      <!--   <a href="/full-stack">full-stack</a>, -->
-      <!--   <a href="/full-service">full-service</a>, -->
-      <!--   and technology agnostic, I select the best tools for the job. -->
-      <!--   I can deploy to any -->
-      <!--   <a href="/cloud">single-cloud, multi-cloud, or on-prem</a> -->
-      <!--   location depending on project requirements. -->
-      <!-- </p> -->
-      <!-- <p> -->
-      <!--   I am efficient, I avoid reinventing -->
-      <!--   the wheel, and, like my software, am -->
-      <!--   <span class="bold">available 24/7</span>. -->
-      <!-- </p> -->
+      <p>
+        We do this by eliminating the barriers to self-hosting
+        open-source equivalents of SaaS products. Self-hosting is
+        usually avoided due to fears that architecting, maintaining,
+        and supporting open-source products typically exceeds a
+        monthly SaaS bill. Our products solve these these three
+        barriers by:
+      </p>
+      <ol>
+        <li>
+          Giving you the keys to a ready-built infrastructure stack
+          with all the components you'll need guaranteed to work
+          cohesively together
+        </li>
+        <li>
+          Providing a subscription that provides automatic
+          maintenance, upgrades, and fixes while guaranteeing
+          enterprise stability at a much lower and more stable cost
+          than your SaaS bill
+        </li>
+        <li>
+          Making our subjet-matter experts available to you with a
+          guaranteed response window for all your support needs
+        </li>
+      </ol>
+      <p>
+        If you have any inquiries, you can contact me below. Make sure
+        to include an e-mail or phone number in your message. This
+        temporary page will be replaced with a full website within the
+        next 2-3 months.
+      </p>
       <form action="/message" method="post" id="send-message">
         <label for="message">
         <span class="bold">Contact me</span>
@@ -58,7 +74,7 @@
         <span class="success">{{ success-msg }}</span>
         {{/if}}
 	    </label>
-        <textarea id="message" name="message" autofocus="true">{{ msg }}</textarea>
+        <textarea id="message" name="message">{{ msg }}</textarea>
         <button>send</button>
       </form>
     </div>
