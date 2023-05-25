@@ -220,14 +220,36 @@ async fn main() {
         .and(warp::body::content_length_limit(1024 * 20))
         .and(warp::body::form())
         .map(|form_map: HashMap<String, String>| {
-            form_map
+            let name = form_map
+                .get("name")
+                .map(|m| m.to_string())
+                .unwrap_or("".to_string());
+            let email = form_map
+                .get("email")
+                .map(|m| m.to_string())
+                .unwrap_or("".to_string());
+            let message = form_map
                 .get("message")
                 .map(|m| m.to_string())
-                .unwrap_or("".to_string())
+                .unwrap_or("".to_string());
+            (name, email, message)
         })
-        .and_then(move |msg: String| {
+        .untuple_one()
+        .and_then(move |name: String, email: String, msg: String| {
             let slack_webhook_url = slack_webhook_url.clone();
             async move {
+                if name.len() <= 0 {
+                    return Ok::<_, std::convert::Infallible>(WithTemplate {
+                        name: "index",
+                        value: json!({ "msg": "", "error-msg": "Don't forget to include your name"}),
+                    });
+                }
+                if email.len() <= 0 {
+                    return Ok::<_, std::convert::Infallible>(WithTemplate {
+                        name: "index",
+                        value: json!({ "msg": "", "error-msg": "Don't forget to include your email"}),
+                    });
+                }
                 if msg.len() <= 0 {
                     return Ok::<_, std::convert::Infallible>(WithTemplate {
                         name: "index",
@@ -236,14 +258,14 @@ async fn main() {
                 }
 
                 let mut slack_body_map = HashMap::new();
-                slack_body_map.insert("text", format!(r#"<!channel> {}"#, format!("homepage: {}", msg)));
+                slack_body_map.insert("text", format!(r#"<!channel> homepage: name: {}, email: {}, message: {}"#, name, email, msg));
 
                 Client::new()
                     .post(&slack_webhook_url)
                     .json(&slack_body_map)
                     .send()
                     .await
-                .map_or_else(|_| {
+                    .map_or_else(|_| {
                 Ok(WithTemplate {
                     name: "index",
                     value: json!({ "msg": msg, "error-msg": "An error occurred while sending, try again in a little bit" }),

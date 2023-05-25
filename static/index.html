@@ -17,56 +17,64 @@
       <h1><span id="header"><span class="neg-highlight">This is Pauwels Labs</span></span></h1>
       {{#if hash-success-msg}}
 	    <span class="success">{{ hash-success-msg }}</span>
-	    {{/if}}
+      {{/if}}
       {{#if hash-error-msg}}
 	    <span class="error">{{ hash-error-msg }}</span>
-	    {{/if}}
+      {{/if}}
       <p>
-        If your software company is undergoing rapid growth and your
-        SaaS infrastructure provider bills are rapidly scaling with
-        it, our products will drastically flatten that curve for you
-        by up to 90%.
+        We provide the fastest tool for building out zero-trust,
+        enterprise clouds running natively on DevSecOps principles.
       </p>
       <p>
-        Our automated infrastructure solution allows software
-        companies to replace their SaaS vendors in order to save
-        money, increase uptime, and remove dependencies on external
-        parties, including us.
+        In 2023, 54% of enterprises were looking to implement
+        DevSecOps within their development process. In our experience,
+        building an effective DevSecOps implementation that automates
+        all components of the software development life-cycle, shifts
+        operations and security as left as they can go, and relies on
+        zero-trust networking can take a team of seasoned engineers
+        9-12 months to architect, deploy, and document.
       </p>
       <p>
-        We do this by eliminating the barriers to self-hosting
-        open-source equivalents of SaaS products. Self-hosting is
-        usually avoided due to fears that architecting, maintaining,
-        and supporting open-source products typically exceeds a
-        monthly SaaS bill. Our products solve these these three
-        barriers by:
+        With our tool, we can help you reduce that time down to two
+        weeks. The end-result is highly secure, cost-optimized,
+        observable via infrastructure and billing monitoring
+        dashboards, and fully supported by our team of subject-matter
+        experts.
+      </p>
+      <p>
+        We accomplish this by having an automated tool which deploys a
+        reference architecture with the needs common to most
+        organizations in less than a day. The tool is then
+        customizable to integrate your company's specific needs and
+        requirements. Working with us is a straight-forward three-step
+        process:
       </p>
       <ol>
         <li>
-          Giving you the keys to a ready-built infrastructure stack
-          with all the components you'll need guaranteed to work
-          cohesively together
+          We review your business and domain-specific needs with you,
+          such as the integration of existing data, users, or tools
+          into your new cloud
         </li>
         <li>
-          Providing a subscription that provides automatic
-          maintenance, upgrades, and fixes while guaranteeing
-          enterprise stability at a much lower and more stable cost
-          than your SaaS bill
+          We customize our tool to your needs and run it to deploy
+          your turn-key cloud
         </li>
         <li>
-          Making our subjet-matter experts available to you with a
-          guaranteed response window for all your support needs
+          We deliver your cloud to you along with all the tooling
+          which automates its management, and optionally offer a
+          service contract which handles all maintenance, upgrades,
+          and support operations
         </li>
       </ol>
       <p>
-        If you have any inquiries, you can contact me below. Make sure
-        to include an e-mail or phone number in your message. This
-        temporary page will be replaced with a full website within the
-        next 2-3 months.
+        If you have any inquiries, you can contact us below. We are
+        currently working on a more comprehensive website which will
+        be out by end of July, we've been too busy optimizing our
+        product!
       </p>
       <form action="/message" method="post" id="send-message">
         <label for="message">
-        <span class="bold">Contact me</span>
+        <span class="bold">Contact us</span>
         {{#if error-msg}}
         <span class="error">{{ error-msg }}</span>
         {{/if}}
@@ -74,7 +82,9 @@
         <span class="success">{{ success-msg }}</span>
         {{/if}}
 	    </label>
-        <textarea id="message" name="message">{{ msg }}</textarea>
+        <input type="text" id="name" name="name" required minlength="1" maxlength="500" placeholder="name"{{#if error-msg}}autofocus{{/if}}{{#if success-msg}}autofocus{{/if}}>
+        <input type="text" id="email" name="email" required minlength="1" maxlength="500" placeholder="email">
+        <textarea id="message" name="message" required minlength="1" maxlength="10000" placeholder="message">{{ msg }}</textarea>
         <button>send</button>
       </form>
     </div>

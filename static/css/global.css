@@ -80,16 +80,25 @@ form {
     height: 100%;
 }
 
-textarea {
+textarea, input {
     resize: none;
     box-sizing: border-box;
-    min-height: 300px;
     height: 100%;
     border-top: 1px solid black;
     border-left: 1px solid black;
     border-right: 1px solid black;
     border-bottom: none;
     outline: none;
+}
+
+input {
+    min-height: 50px;
+}
+
+textarea {
+    min-height: 300px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 button {
