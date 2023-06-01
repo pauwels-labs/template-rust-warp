@@ -1,4 +1,4 @@
-# Pauwels Labs Homepage
-[![Coverage Status](https://coveralls.io/repos/github/pauwels-labs/homepage/badge.svg?branch=)](https://coveralls.io/github/pauwels-labs/homepage?branch=)
+# Rust Warp Template
 
-test
+This is a template repository for creating webservers using Rust's
+warp framework

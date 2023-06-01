@@ -77,7 +77,6 @@ fn hash() -> impl Filter<Extract = (WithTemplate<Value>,), Error = warp::Rejecti
 mod test {
     use super::hash;
     use serde_json::json;
-    use std::time::{Duration, Instant};
 
     #[tokio::test]
     async fn test_hash_default() {
@@ -177,8 +176,8 @@ async fn main() {
     // let guard = exporter.wait_request();
     // drop(guard);
 
-    let config_path = if Path::new("/etc/homepage/config").is_dir() {
-        "/etc/homepage/config".to_owned()
+    let config_path = if Path::new("/etc/service/config").is_dir() {
+        "/etc/service/config".to_owned()
     } else {
         "./config".to_owned()
     };
@@ -199,16 +198,6 @@ async fn main() {
         })
         .map(handlebars.clone());
 
-    let expandable_route =
-        warp::path!("expandable").and(warp::fs::file("./static/expandable.html"));
-    let scalable_route = warp::path!("scalable").and(warp::fs::file("./static/scalable.html"));
-    let highly_available_route =
-        warp::path!("highly-available").and(warp::fs::file("./static/highly-available.html"));
-    let full_stack_route =
-        warp::path!("full-stack").and(warp::fs::file("./static/full-stack.html"));
-    let full_service_route =
-        warp::path!("full-service").and(warp::fs::file("./static/full-service.html"));
-    let cloud_route = warp::path!("cloud").and(warp::fs::file("./static/cloud.html"));
     let css_routes = warp::path!("css" / ..).and(warp::fs::dir("./static/css"));
 
     let slack_webhook_url = config.get_str("slack.webhook").unwrap();
@@ -258,7 +247,7 @@ async fn main() {
                 }
 
                 let mut slack_body_map = HashMap::new();
-                slack_body_map.insert("text", format!(r#"<!channel> homepage: name: {}, email: {}, message: {}"#, name, email, msg));
+                slack_body_map.insert("text", format!(r#"<!channel> template-rust-warp: name: {}, email: {}, message: {}"#, name, email, msg));
 
                 Client::new()
                     .post(&slack_webhook_url)
@@ -280,15 +269,7 @@ async fn main() {
         })
         .map(handlebars.clone());
 
-    let static_routes = index_route
-        .or(expandable_route)
-        .or(scalable_route)
-        .or(highly_available_route)
-        .or(full_stack_route)
-        .or(full_service_route)
-        .or(cloud_route)
-        .or(css_routes)
-        .or(message_route);
+    let static_routes = index_route.or(css_routes).or(message_route);
     //.or(hash_route);
 
     println!("Starting server listening [::0]:8080");
